@@ -1,29 +1,29 @@
-import tseslint from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
+import tseslint from 'typescript-eslint'
+// @ts-expect-error missing types
 import reactHooks from 'eslint-plugin-react-hooks'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+export default tseslint.config(
   {
     // Only lint source files, not dist or node_modules
-    ignores: ['dist/**', 'node_modules/**', 'tests/e2e/**'],
+    ignores: ['dist/**', 'node_modules/**', 'tests/e2e/**', 'eslint.config.mjs'],
   },
+  ...tseslint.configs.recommendedTypeChecked,
   {
-    files: ['src/**/*.{ts,tsx}', 'manifest.config.ts', 'vite.config.ts'],
+    files: ['src/**/*.{ts,tsx}', '*.config.ts'],
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {
-      '@typescript-eslint': tseslint,
       'react-hooks': reactHooks,
     },
     rules: {
-      // TypeScript strict rules
-      ...tseslint.configs['recommended-type-checked'].rules,
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
@@ -35,11 +35,9 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
 
       // Hard rule guard: forbid form submission calls in src/
-      // M0-T4: these patterns are caught at lint time
       'no-restricted-syntax': [
         'error',
         {
-          // form.submit() or element.submit()
           selector: "CallExpression[callee.property.name='submit']",
           message:
             '[Autoply hard rule] Never call .submit() — the user submits the application themselves.',
@@ -51,21 +49,17 @@ export default [
         },
       ],
 
-      // Console logging is a warning in all builds; the build step strips them in prod
+      // Console logging is a warning in all builds
       'no-console': 'warn',
     },
   },
   {
     // Tests may use console freely and are excluded from the submit guard
     files: ['tests/unit/**/*.{ts,tsx}'],
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
@@ -73,4 +67,4 @@ export default [
       'no-restricted-syntax': 'off',
     },
   },
-]
+)

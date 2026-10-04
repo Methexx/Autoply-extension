@@ -14,13 +14,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "types": ["chrome", "vite/client"],
+    "types": ["chrome", "vite/client", "node"],
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["src/shared/*"]
     }
   },
-  "include": ["src", "manifest.config.ts", "vite.config.ts", "eslint.config.ts"],
+  "include": ["src", "tests/unit", "*.config.ts", "*.config.mjs"],
   "exclude": ["node_modules", "dist", "tests/e2e"]
 }
