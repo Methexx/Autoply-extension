@@ -62,7 +62,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
   - AC: Unit tests with jsdom pass on hand-written snippets.
 - [x] **M4-T3 Greenhouse adapter.** AC: F3 AC2 on the Greenhouse fixture (≥95% of visible fields).
 - [x] **M4-T4 Lever adapter.** AC: F3 AC2 on the Lever fixture.
-- [ ] **M4-T5 Classification.** Standard vs open-ended vs ignore per `07` §4.
+- [x] **M4-T5 Classification.** Standard vs open-ended vs ignore per `07` §4.
   - AC: Table-driven tests; sensitive fields (EEO, visa, salary) are classified `ignore`.
 - [ ] **M4-T6 Safe fill.** `setNativeValue`, select, radio per `07` §5.
   - AC: F4 AC1–AC2; framework-style inputs register values (test with a small React fixture).
