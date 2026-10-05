@@ -60,7 +60,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
   - AC: Fixtures contain no personal data; served locally in tests.
 - [x] **M4-T2 Label resolution + generic detector.** Per `07` §2–3.
   - AC: Unit tests with jsdom pass on hand-written snippets.
-- [ ] **M4-T3 Greenhouse adapter.** AC: F3 AC2 on the Greenhouse fixture (≥95% of visible fields).
+- [x] **M4-T3 Greenhouse adapter.** AC: F3 AC2 on the Greenhouse fixture (≥95% of visible fields).
 - [ ] **M4-T4 Lever adapter.** AC: F3 AC2 on the Lever fixture.
 - [ ] **M4-T5 Classification.** Standard vs open-ended vs ignore per `07` §4.
   - AC: Table-driven tests; sensitive fields (EEO, visa, salary) are classified `ignore`.
