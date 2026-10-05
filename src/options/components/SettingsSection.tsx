@@ -47,9 +47,13 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
         jobTextMaxChars: 6000,
       })
 
-      const response = (await chrome.runtime.sendMessage({ type: 'TEST_KEY' })) as
-        | { ok: boolean; error?: { message: string } }
-        | undefined
+      const response = await new Promise<{ ok: boolean; error?: { message?: string } } | undefined>(
+        (resolve) => {
+          chrome.runtime.sendMessage({ type: 'TEST_KEY' }, (res: unknown) => {
+            resolve(res as { ok: boolean; error?: { message?: string } } | undefined)
+          })
+        },
+      )
 
       if (response?.ok) {
         setTestState('success')

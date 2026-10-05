@@ -10,46 +10,46 @@ Status legend: `[ ]` todo · `[~]` in progress · `[x]` done
 
 Goal: an empty extension builds, loads in Chrome, and tooling works.
 
-- [ ] **M0-T1 Scaffold repo.** Vite + CRXJS + React + TypeScript (strict), pnpm, folder layout from `AGENTS.md` §6.
+- [x] **M0-T1 Scaffold repo.** Vite + CRXJS + React + TypeScript (strict), pnpm, folder layout from `AGENTS.md` §6.
   - Read: `04-tech-stack.md`
   - AC: `pnpm dev` and `pnpm build` succeed; `dist/` loads as an unpacked extension.
-- [ ] **M0-T2 Manifest.** MV3 manifest with exactly the permissions in `04` §3.
+- [x] **M0-T2 Manifest.** MV3 manifest with exactly the permissions in `04` §3.
   - AC: Extension loads; toolbar button visible; no extra permissions.
-- [ ] **M0-T3 Tooling.** ESLint, Prettier, Vitest, `typecheck`, `lint`, `test` scripts; CI workflow running them.
+- [x] **M0-T3 Tooling.** ESLint, Prettier, Vitest, `typecheck`, `lint`, `test` scripts; CI workflow running them.
   - AC: A trivial test passes in CI.
-- [ ] **M0-T4 Forbidden-call guard.** A test/lint check that fails if `src/` contains `.submit(`, `requestSubmit(`, or `.click(` outside tests.
+- [x] **M0-T4 Forbidden-call guard.** A test/lint check that fails if `src/` contains `.submit(`, `requestSubmit(`, or `.click(` outside tests.
   - Read: `07` §6, `09`
   - AC: Introducing `.click(` in `src/` makes the check fail.
 
 ## M1 — Shared foundation (F1, F2 prerequisites)
 
-- [ ] **M1-T1 Types and schemas.** Implement `types.ts` and `schemas.ts` per `05-data-models.md`.
+- [x] **M1-T1 Types and schemas.** Implement `types.ts` and `schemas.ts` per `05-data-models.md`.
   - AC: Zod schemas for Profile, Settings, Message, Draft; unit tests for valid/invalid samples.
-- [ ] **M1-T2 Storage wrapper.** Typed `getProfile/setProfile/getSettings/setSettings/clearAll`, schemaVersion init.
+- [x] **M1-T2 Storage wrapper.** Typed `getProfile/setProfile/getSettings/setSettings/clearAll`, schemaVersion init.
   - AC: Values round-trip; invalid stored data is rejected safely (returns null/default, no crash).
-- [ ] **M1-T3 `toLlmProfile`.** Pure function excluding email, phone, location, links.
+- [x] **M1-T3 `toLlmProfile`.** Pure function excluding email, phone, location, links.
   - AC: Unit test asserts excluded fields are absent from output.
 
 ## M2 — Options page (F1, F2)
 
-- [ ] **M2-T1 Profile form.** Sections and validation per `08` §2.2.
+- [x] **M2-T1 Profile form.** Sections and validation per `08` §2.2.
   - AC: F1 AC1–AC3.
-- [ ] **M2-T2 API key section.** Save/mask/remove per `08` §2.1.
+- [x] **M2-T2 API key section.** Save/mask/remove per `08` §2.1.
   - AC: F2 AC1.
-- [ ] **M2-T3 Gemini client + test key.** `llm/gemini.ts` minimal request, `TEST_KEY` message, error mapping.
+- [x] **M2-T3 Gemini client + test key.** `llm/gemini.ts` minimal request, `TEST_KEY` message, error mapping.
   - Read: `06`
   - AC: F2 AC2 (distinct messages for invalid key / rate limit / network) using mocked `fetch` in tests; manual test with a real key.
-- [ ] **M2-T4 Clear all data.** Button + confirm.
+- [x] **M2-T4 Clear all data.** Button + confirm.
   - AC: All Autoply keys removed from storage.
 
 ## M3 — Prototype drafting pipeline (F5 core, no page integration)
 
-- [ ] **M3-T1 Prompt builders.** `prompt.ts` with canonical system prompt and user prompt layout.
+- [x] **M3-T1 Prompt builders.** `prompt.ts` with canonical system prompt and user prompt layout.
   - Read: `06` §5–6
   - AC: Unit tests: no contact details in output, job text truncated, hint included, page text not in system prompt.
-- [ ] **M3-T2 Response parsing.** `parse.ts` with Zod validation and id reconciliation.
+- [x] **M3-T2 Response parsing.** `parse.ts` with Zod validation and id reconciliation.
   - AC: Tests for valid, missing ids, extra ids, invalid JSON, wrong enum, option not in list.
-- [ ] **M3-T3 Draft pipeline in service worker.** `DRAFT_REQUEST`/`REGENERATE_REQUEST` handlers with retry rules and error codes.
+- [x] **M3-T3 Draft pipeline in service worker.** `DRAFT_REQUEST`/`REGENERATE_REQUEST` handlers with retry rules and error codes.
   - AC: Mocked-fetch tests cover 429, 401, network failure, bad JSON (retry once), success.
 - [ ] **M3-T4 Dev playground (temporary).** A dev-only page in options where you paste a question and job text and see the draft.
   - AC: Used to tune prompt quality (10 sample questions reviewed per `11` §5). Remove or hide in production builds.
