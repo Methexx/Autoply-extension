@@ -1,6 +1,7 @@
-// Service worker entry point.
-// This file is intentionally minimal at scaffold stage.
-// Messaging, Gemini calls, and prompt logic are added in M2-T3 and M3.
+import { registerMessageHandlers } from './messaging'
+
+// Register all messaging listeners
+registerMessageHandlers()
 
 chrome.action.onClicked.addListener(tab => {
   // M4-T8 will handle profile/key check and content-script injection.

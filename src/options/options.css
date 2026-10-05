@@ -1,29 +1,278 @@
-/* Options page base styles — full design system applied in M2 */
-*,
-*::before,
-*::after {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Premium Light Theme */
+  --bg-app: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-input-hover: #f3f4f6;
+  --bg-button: #111827;
+  --bg-button-hover: #374151;
+  --bg-danger: #fee2e2;
+  --bg-danger-hover: #fecaca;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --text-button: #ffffff;
+  --text-danger: #b91c1c;
+  --border-color: #e5e7eb;
+  --border-focus: #3b82f6;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Premium Dark Theme */
+    --bg-app: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #0f172a;
+    --bg-input-hover: #334155;
+    --bg-button: #f8fafc;
+    --bg-button-hover: #e2e8f0;
+    --bg-danger: #450a0a;
+    --bg-danger-hover: #7f1d1d;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-button: #0f172a;
+    --text-danger: #fca5a5;
+    --border-color: #334155;
+    --border-focus: #38bdf8;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  }
+}
+
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  font-size: 16px;
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
   line-height: 1.5;
-  color: #1a1a1a;
-  background: #f8f8f8;
-  min-width: 640px;
+  -webkit-font-smoothing: antialiased;
 }
 
-.options-root {
-  max-width: 720px;
+#root {
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 40px 24px 100px;
 }
 
+/* Typography */
 h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+p {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* Layout */
+.section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.section:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+/* Inputs */
+.input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.input:hover {
+  background-color: var(--bg-input-hover);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-error {
+  border-color: var(--text-danger);
+}
+
+.error-message {
+  color: var(--text-danger);
+  font-size: 0.75rem;
+  margin-top: 0.375rem;
+  font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--bg-button);
+  color: var(--text-button);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn:hover:not(:disabled) {
+  background-color: var(--bg-button-hover);
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-input-hover);
+}
+
+.btn-danger {
+  background-color: var(--bg-danger);
+  color: var(--text-danger);
+  border: 1px solid transparent;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--bg-danger-hover);
+}
+
+.btn-icon {
+  padding: 0.5rem;
+}
+
+/* Sticky Save Bar */
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 6px -1px rgb(0 0 0 / 0.05);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background-color: color-mix(in srgb, var(--bg-card) 90%, transparent);
+}
+
+/* Cards (for arrays like education) */
+.array-card {
+  background: color-mix(in srgb, var(--bg-input) 50%, var(--bg-card));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.array-card-remove {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Utility */
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-gap {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mt-4 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 1rem; }
+.text-sm { font-size: 0.875rem; }
+
+/* Notice Banner */
+.notice {
+  background-color: color-mix(in srgb, var(--border-focus) 10%, transparent);
+  border-left: 4px solid var(--border-focus);
+  padding: 1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin-bottom: 1.5rem;
 }

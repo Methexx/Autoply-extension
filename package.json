@@ -2,6 +2,7 @@
   "name": "autoply",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "AI-drafted job application answers, reviewed by you before anything is submitted.",
   "scripts": {
     "dev": "vite",
@@ -16,8 +17,11 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "lucide-react": "^1.51.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "^7.89.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
