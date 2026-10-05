@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Globex Corp - Senior Frontend Engineer</title>
+</head>
+<body>
+  <div class="posting-header">
+    <div class="posting-headline">
+      <h2>Senior Frontend Engineer</h2>
+      <div class="posting-categories">
+        <span class="location">New York, NY / Remote</span>
+        <span class="department">Engineering</span>
+        <span class="commitment">Full-time</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section page-centered posting-description">
+    <div class="section-wrapper">
+      <div class="content">
+        <h3>About the Role</h3>
+        <p>Globex Corp is modernizing enterprise software with AI-assisted workflows. We are seeking a Senior Frontend Engineer to build robust, delightful web applications with high performance and accessibility.</p>
+        <h3>Qualifications</h3>
+        <p>3+ years of experience with modern TypeScript and component libraries.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section page-centered application-form-section">
+    <form class="application-form" id="application-form" method="POST" action="/apply">
+      <h4>Submit your application</h4>
+
+      <ul class="application-questions">
+        <li class="application-question">
+          <label>
+            <div class="text">Full Name <span class="required">*</span></div>
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">Email <span class="required">*</span></div>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">Phone <span class="required">*</span></div>
+            <input type="tel" name="phone" autocomplete="tel" required />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">Current company</div>
+            <input type="text" name="org" />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">LinkedIn URL</div>
+            <input type="url" name="urls[LinkedIn]" placeholder="https://www.linkedin.com/in/..." />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">GitHub URL</div>
+            <input type="url" name="urls[GitHub]" placeholder="https://github.com/..." />
+          </label>
+        </li>
+
+        <li class="application-question">
+          <label>
+            <div class="text">Portfolio URL</div>
+            <input type="url" name="urls[Portfolio]" placeholder="https://..." />
+          </label>
+        </li>
+
+        <!-- Custom Questions -->
+        <li class="application-question custom-question">
+          <label>
+            <div class="text">What makes you a great fit for Globex Corp? <span class="required">*</span></div>
+            <textarea name="comments" rows="5" maxlength="1200" required></textarea>
+          </label>
+        </li>
+
+        <li class="application-question custom-question">
+          <label>
+            <div class="text">Describe your experience with state management in React.</div>
+            <textarea name="experience_details" rows="5" maxlength="1000"></textarea>
+          </label>
+        </li>
+
+        <li class="application-question custom-question">
+          <div class="text">Will you now or in the future require visa sponsorship?</div>
+          <div class="radio-options">
+            <label>
+              <input type="radio" name="cards[sponsorship][field0]" value="Yes" />
+              <span>Yes</span>
+            </label>
+            <label>
+              <input type="radio" name="cards[sponsorship][field0]" value="No" />
+              <span>No</span>
+            </label>
+          </div>
+        </li>
+
+        <li class="application-question custom-question">
+          <label>
+            <div class="text">Desired compensation (Annual USD)</div>
+            <input type="text" name="cards[salary][field0]" />
+          </label>
+        </li>
+      </ul>
+
+      <div class="form-submit">
+        <button type="submit" class="postings-btn template-btn-submit">Submit application</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

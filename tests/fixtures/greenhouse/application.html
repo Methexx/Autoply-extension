@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Software Engineer at Acme Corp</title>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <h1 class="app-title">Staff Software Engineer</h1>
+      <span class="company-name">at Acme Corp</span>
+      <div class="location">San Francisco, CA / Remote</div>
+    </div>
+
+    <div id="content">
+      <div id="job_description">
+        <h2>About Acme Corp</h2>
+        <p>Acme Corp builds modern developer tools for cloud environments. We are looking for a Staff Software Engineer to lead frontend architecture and scale our developer workflow.</p>
+        <h2>Responsibilities</h2>
+        <ul>
+          <li>Design and implement scalable web applications using TypeScript and React.</li>
+          <li>Collaborate with product and design teams to deliver polished features.</li>
+          <li>Mentor junior engineers and maintain high code quality standards.</li>
+        </ul>
+      </div>
+
+      <form id="application_form" method="POST" action="/applications">
+        <h2>Apply for this Job</h2>
+        
+        <div class="field">
+          <label for="first_name">First Name <span class="asterisk">*</span></label>
+          <input type="text" id="first_name" name="job_application[first_name]" autocomplete="given-name" required />
+        </div>
+
+        <div class="field">
+          <label for="last_name">Last Name <span class="asterisk">*</span></label>
+          <input type="text" id="last_name" name="job_application[last_name]" autocomplete="family-name" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="asterisk">*</span></label>
+          <input type="email" id="email" name="job_application[email]" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="job_application[phone]" autocomplete="tel" />
+        </div>
+
+        <div class="field">
+          <label for="job_application_location">Location (City, State / Country)</label>
+          <input type="text" id="job_application_location" name="job_application[location]" />
+        </div>
+
+        <div class="field">
+          <label for="job_application_answers_attributes_0_text_value">LinkedIn Profile</label>
+          <input type="url" id="job_application_answers_attributes_0_text_value" name="job_application[answers_attributes][0][text_value]" placeholder="https://linkedin.com/in/..." />
+        </div>
+
+        <div class="field">
+          <label for="job_application_answers_attributes_1_text_value">Website / Portfolio / GitHub</label>
+          <input type="url" id="job_application_answers_attributes_1_text_value" name="job_application[answers_attributes][1][text_value]" />
+        </div>
+
+        <!-- Custom Questions (Open-ended) -->
+        <div class="field">
+          <label for="job_application_answers_attributes_2_text_value">
+            Why are you interested in joining Acme Corp? <span class="asterisk">*</span>
+          </label>
+          <textarea id="job_application_answers_attributes_2_text_value" name="job_application[answers_attributes][2][text_value]" rows="5" maxlength="1500" required></textarea>
+        </div>
+
+        <div class="field">
+          <label for="job_application_answers_attributes_3_text_value">
+            Describe a challenging technical problem you solved recently and its impact.
+          </label>
+          <textarea id="job_application_answers_attributes_3_text_value" name="job_application[answers_attributes][3][text_value]" rows="6" maxlength="2000"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="job_application_answers_attributes_4_boolean_value">
+            How did you hear about this job?
+          </label>
+          <select id="job_application_answers_attributes_4_boolean_value" name="job_application[answers_attributes][4][value]">
+            <option value="">-- Please select --</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Employee Referral</option>
+            <option value="Twitter">Twitter / X</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Demographic / EEO (Should be ignored by classification) -->
+        <div class="field eeo-field">
+          <label for="gender">Gender</label>
+          <select id="gender" name="job_application[gender]">
+            <option value="">Decline to self-identify</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="field eeo-field">
+          <label for="salary_expectations">What are your salary expectations?</label>
+          <input type="text" id="salary_expectations" name="job_application[salary]" />
+        </div>
+
+        <div class="field eeo-field">
+          <label for="visa_status">Are you legally authorized to work in the US?</label>
+          <select id="visa_status" name="job_application[visa]">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <div id="submit_app">
+          <input type="submit" id="submit_button" value="Submit Application" />
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

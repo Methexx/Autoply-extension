@@ -56,7 +56,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
 
 ## M4 — Detection and filling (F3, F4)
 
-- [ ] **M4-T1 Fixtures.** Save sanitised HTML of one Greenhouse and one Lever application page to `tests/fixtures/`.
+- [x] **M4-T1 Fixtures.** Save sanitised HTML of one Greenhouse and one Lever application page to `tests/fixtures/`.
   - AC: Fixtures contain no personal data; served locally in tests.
 - [ ] **M4-T2 Label resolution + generic detector.** Per `07` §2–3.
   - AC: Unit tests with jsdom pass on hand-written snippets.
