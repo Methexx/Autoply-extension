@@ -234,8 +234,10 @@ export async function handleAppMessage(
 }
 
 export function registerMessageHandlers(): void {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    void handleAppMessage(message, sender).then(sendResponse)
-    return true // Keep channel open for async response
-  })
+  if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      void handleAppMessage(message, sender).then(sendResponse)
+      return true // Keep channel open for async response
+    })
+  }
 }

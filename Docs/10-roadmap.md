@@ -68,7 +68,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
   - AC: F4 AC1–AC2; framework-style inputs register values (test with a small React fixture).
 - [x] **M4-T7 Job context extraction.** Title, company, description per `07` §7.
   - AC: Extracts correct title/company on both fixtures.
-- [ ] **M4-T8 On-demand injection.** Toolbar click → check profile/key → inject content script → run scan.
+- [x] **M4-T8 On-demand injection.** Toolbar click → check profile/key → inject content script → run scan.
   - AC: F3 AC3 (nothing runs before click); missing profile/key opens options.
 
 ## M5 — Review overlay (F6, F7, F8)
