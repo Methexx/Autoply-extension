@@ -2,8 +2,25 @@ import { getAdapterForPage } from './adapters'
 import { classifyField } from './detect/classify'
 import { fillStandardFields } from './fill/fill-standard'
 import { getProfile } from '../shared/storage'
-import { Question } from '../shared/schemas'
+import { Draft, DraftReplySchema, Question, ReviewItem } from '../shared/schemas'
 import { mountOverlay } from './overlay/Overlay'
+import { extractJobContext } from './detect/job'
+
+function toReviewItems(questions: Question[], drafts: Draft[]): ReviewItem[] {
+  const byId = new Map(drafts.map(draft => [draft.id, draft]))
+  return questions.map(question => {
+    const draft = byId.get(question.id) ?? {
+      id: question.id,
+      status: 'needs_input' as const,
+      answer: '',
+    }
+    return { question, draft, editedAnswer: draft.answer, state: 'pending' as const }
+  })
+}
+
+function sendMessage(message: unknown): Promise<unknown> {
+  return new Promise(resolve => chrome.runtime.sendMessage(message, resolve))
+}
 
 declare global {
   interface Window {
@@ -58,8 +75,31 @@ export async function runAutoplyScan(): Promise<{
     filledStandardCount = filled.length
   }
 
-  // The next review task replaces this placeholder with the draft request and review state.
   overlay.setState('drafting')
+  if (openEndedQuestions.length > 0) {
+    const job = extractJobContext(url, document)
+    const response = DraftReplySchema.safeParse(
+      await sendMessage({ type: 'DRAFT_REQUEST', job, questions: openEndedQuestions }),
+    )
+    if (response.success && response.data.ok) {
+      overlay.showReview(
+        toReviewItems(openEndedQuestions, response.data.drafts),
+        async (question, hint) => {
+          const regenerated = DraftReplySchema.safeParse(
+            await sendMessage({
+              type: 'REGENERATE_REQUEST',
+              job,
+              question,
+              ...(hint ? { hint } : {}),
+            }),
+          )
+          return regenerated.success && regenerated.data.ok
+            ? (regenerated.data.drafts[0] ?? null)
+            : null
+        },
+      )
+    }
+  }
 
   return {
     adapterName: adapter.name,

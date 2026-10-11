@@ -11,6 +11,9 @@ describe('On-demand injection (M4-T8)', () => {
       runtime: {
         id: 'test-id',
         openOptionsPage: vi.fn().mockResolvedValue(undefined),
+        sendMessage: vi.fn((_message: unknown, callback: (reply: unknown) => void) => {
+          callback({ ok: true, drafts: [{ id: 'q', status: 'ok', answer: 'Draft answer' }] })
+        }),
       },
       scripting: {
         executeScript: vi.fn().mockResolvedValue(undefined),
@@ -130,7 +133,7 @@ describe('On-demand injection (M4-T8)', () => {
     expect(result.openEndedQuestions).toHaveLength(1)
     expect(result.openEndedQuestions[0]?.id).toBe('q')
     expect(document.getElementById('autoply-root')?.shadowRoot?.textContent).toContain(
-      'Drafting answers with Gemini…',
+      'Draft answer',
     )
   })
 })
