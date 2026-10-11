@@ -51,7 +51,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
   - AC: Tests for valid, missing ids, extra ids, invalid JSON, wrong enum, option not in list.
 - [x] **M3-T3 Draft pipeline in service worker.** `DRAFT_REQUEST`/`REGENERATE_REQUEST` handlers with retry rules and error codes.
   - AC: Mocked-fetch tests cover 429, 401, network failure, bad JSON (retry once), success.
-- [ ] **M3-T4 Dev playground (temporary).** A dev-only page in options where you paste a question and job text and see the draft.
+- [~] **M3-T4 Dev playground (temporary).** A dev-only page in options where you paste a question and job text and see the draft.
   - AC: Used to tune prompt quality (10 sample questions reviewed per `11` §5). Remove or hide in production builds.
 
 ## M4 — Detection and filling (F3, F4)

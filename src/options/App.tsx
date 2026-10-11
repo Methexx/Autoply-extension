@@ -4,6 +4,7 @@ import { Profile, Settings } from '../shared/schemas'
 import { ProfileSection } from './components/ProfileSection'
 import { SettingsSection } from './components/SettingsSection'
 import { ClearDataSection } from './components/ClearDataSection'
+import { DevPlayground } from './components/DevPlayground'
 import { Sparkles } from 'lucide-react'
 
 export function App() {
@@ -45,6 +46,7 @@ export function App() {
       <SettingsSection initialData={settingsData} key={`settings-${refreshKey}`} />
       <ProfileSection initialData={profileData} key={`profile-${refreshKey}`} />
       <ClearDataSection onCleared={handleCleared} />
+      {import.meta.env.DEV && <DevPlayground />}
     </>
   )
 }
