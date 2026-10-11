@@ -23,7 +23,7 @@ export async function handleActionClick(tab: chrome.tabs.Tab): Promise<void> {
   // Inject content script into active tab on demand
   await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    files: ['src/content/index.ts'],
+    files: ['content.js'],
   })
 }
 

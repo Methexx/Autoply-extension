@@ -85,7 +85,7 @@ describe('On-demand injection (M4-T8)', () => {
     expect(chrome.runtime.openOptionsPage).not.toHaveBeenCalled()
     expect(chrome.scripting.executeScript).toHaveBeenCalledWith({
       target: { tabId: 101 },
-      files: ['src/content/index.ts'],
+      files: ['content.js'],
     })
   })
 
@@ -129,5 +129,8 @@ describe('On-demand injection (M4-T8)', () => {
     expect(result.filledStandardCount).toBe(3) // first, last, email
     expect(result.openEndedQuestions).toHaveLength(1)
     expect(result.openEndedQuestions[0]?.id).toBe('q')
+    expect(document.getElementById('autoply-root')?.shadowRoot?.textContent).toContain(
+      'Drafting answers with Gemini…',
+    )
   })
 })

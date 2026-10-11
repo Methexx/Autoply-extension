@@ -73,7 +73,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
 
 ## M5 — Review overlay (F6, F7, F8)
 
-- [ ] **M5-T1 Overlay shell.** Shadow DOM host, styles, open/close, scanning/drafting states.
+- [~] **M5-T1 Overlay shell.** Shadow DOM host, styles, open/close, scanning/drafting states.
   - AC: F6 AC3–AC4; page CSS does not break overlay and vice versa.
 - [ ] **M5-T2 Review items.** Editable drafts, approve/skip/regenerate, `needs_input` styling, char counters.
   - Read: `08` §4

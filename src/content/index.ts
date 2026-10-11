@@ -3,6 +3,7 @@ import { classifyField } from './detect/classify'
 import { fillStandardFields } from './fill/fill-standard'
 import { getProfile } from '../shared/storage'
 import { Question } from '../shared/schemas'
+import { mountOverlay } from './overlay/Overlay'
 
 declare global {
   interface Window {
@@ -15,11 +16,13 @@ export async function runAutoplyScan(): Promise<{
   filledStandardCount: number
   openEndedQuestions: Question[]
 }> {
+  const overlay = mountOverlay('scanning')
   const url = new URL(window.location.href)
   const adapter = getAdapterForPage(url, document)
 
   const formRoot = adapter.findFormRoot(document)
   if (!formRoot) {
+    overlay.setState('drafting')
     return {
       adapterName: adapter.name,
       filledStandardCount: 0,
@@ -54,6 +57,9 @@ export async function runAutoplyScan(): Promise<{
     const filled = fillStandardFields(rawFields, profile)
     filledStandardCount = filled.length
   }
+
+  // The next review task replaces this placeholder with the draft request and review state.
+  overlay.setState('drafting')
 
   return {
     adapterName: adapter.name,
