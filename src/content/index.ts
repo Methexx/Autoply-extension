@@ -50,6 +50,15 @@ export async function runAutoplyScan(): Promise<{
   }
 
   const rawFields = adapter.findFields(formRoot)
+  if (rawFields.length === 0) {
+    overlay.showError({ code: 'NO_FIELDS', message: 'No fields detected.', retryable: false })
+    return {
+      adapterName: adapter.name,
+      filledStandardCount: 0,
+      openEndedQuestions: [],
+    }
+  }
+
   const fieldsById = new Map<string, RawField>()
   for (const field of rawFields) {
     const id = field.el.id || field.el.name
@@ -127,8 +136,7 @@ export async function runAutoplyScan(): Promise<{
 if (
   typeof window !== 'undefined' &&
   typeof chrome !== 'undefined' &&
-  chrome.runtime?.id &&
-  !window.__autoplyInjected
+  chrome.runtime?.id
 ) {
   window.__autoplyInjected = true
   void runAutoplyScan()

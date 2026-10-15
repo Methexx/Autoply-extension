@@ -136,4 +136,16 @@ describe('On-demand injection (M4-T8)', () => {
       'Draft answer',
     )
   })
+
+  it('shows a clear error when the page has no usable application fields', async () => {
+    document.body.innerHTML = '<main><h1>Job listing</h1><p>Read the role details here.</p></main>'
+
+    const result = await runAutoplyScan()
+
+    expect(result.filledStandardCount).toBe(0)
+    expect(result.openEndedQuestions).toEqual([])
+    expect(document.getElementById('autoply-root')?.shadowRoot?.textContent).toContain(
+      "I couldn't find an application form on this page.",
+    )
+  })
 })
