@@ -66,6 +66,14 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** `autoply-extension`, `autoply-ai` (can be revisited if more repos are added).
 - **Status:** Accepted.
 
+### D-011 · MIT license for the unpacked MVP
+- **Decision:** Release the unpacked MVP under the MIT License.
+- **Why:** It is a permissive, familiar license for a small open-source browser extension and
+  matches the intended public-repository distribution.
+- **Alternatives:** No license (rejected because reuse rights would be unclear); a copyleft license
+  (not needed for this MVP).
+- **Status:** Accepted.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.
@@ -75,7 +83,6 @@ Resolve these before or during the milestone noted; then move the answer into th
 | Q-001 | Which exact Gemini model ID is the default, and what are the current free-tier limits? | M2-T3 |
 | Q-002 | Should the first/last name split be derived from `fullName`, or should the profile store them separately? | M4-T5 |
 | Q-003 | Should "location" ever be sent to the LLM for relocation-type questions (with an approval prompt)? | Post-MVP |
-| Q-004 | Which license (MIT suggested)? | M6-T4 |
 | Q-005 | Do we ship a dev-only playground (M3-T4) in production builds? Default: no. | M3-T4 |
 | Q-006 | How should the extension behave on Lever when the job description is only on the posting page, not the apply page? Default: empty description + overlay notice. | M4-T4 |
 | Q-007 | Chrome Web Store listing vs unpacked distribution for the first public release? | M6 |

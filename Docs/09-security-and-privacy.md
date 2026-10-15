@@ -51,14 +51,25 @@ Autoply handles personal information (a CV-like profile) and an API key, and it 
 
 ## 6. Extension hardening checklist
 
-- [ ] Manifest permissions match `04-tech-stack.md` exactly.
-- [ ] No remotely hosted code; no `eval`, no `new Function`.
-- [ ] Content Security Policy left at the MV3 default (no relaxing).
-- [ ] Message handlers verify `sender.id` and validate payloads with Zod.
-- [ ] No `dangerouslySetInnerHTML` anywhere.
-- [ ] Key never appears in any `console.*`, error object, or message.
-- [ ] Overlay uses Shadow DOM; no global style/script pollution.
-- [ ] `pnpm audit` clean or exceptions documented.
+- [x] Manifest permissions match `04-tech-stack.md` exactly.
+- [x] No remotely hosted code; no `eval`, no `new Function`.
+- [x] Content Security Policy left at the MV3 default (no relaxing).
+- [x] Message handlers verify `sender.id` and validate payloads with Zod.
+- [x] No `dangerouslySetInnerHTML` anywhere.
+- [x] Key never appears in any `console.*`, error object, or message.
+- [x] Overlay uses Shadow DOM; no global style/script pollution.
+- [x] `pnpm audit` clean or exceptions documented.
+
+### Verification evidence (2026-10-16)
+
+- `manifest.config.ts` was compared with `04-tech-stack.md` §3: only `storage`,
+  `activeTab`, `scripting`, and Gemini's host permission are present. No custom CSP is set.
+- Source scans found no `eval`, `new Function`, `dangerouslySetInnerHTML`, or production
+  `console.*` calls. The forbidden-call guard covers `.submit(`, `requestSubmit(`, and `.click(`.
+- `handleAppMessage` checks `sender.id` and parses every message with `AppMessageSchema`.
+- Overlay tests verify that the UI is mounted in an open Shadow DOM; browser tests confirm it
+  does not submit the fixture form.
+- `pnpm audit` reported `No known vulnerabilities found` after updating the development toolchain.
 
 ## 6.1 Terms-of-service stance
 

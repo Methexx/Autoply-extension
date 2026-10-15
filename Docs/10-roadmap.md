@@ -73,27 +73,27 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
 
 ## M5 — Review overlay (F6, F7, F8)
 
-- [~] **M5-T1 Overlay shell.** Shadow DOM host, styles, open/close, scanning/drafting states.
+- [x] **M5-T1 Overlay shell.** Shadow DOM host, styles, open/close, scanning/drafting states.
   - AC: F6 AC3–AC4; page CSS does not break overlay and vice versa.
-- [~] **M5-T2 Review items.** Editable drafts, approve/skip/regenerate, `needs_input` styling, char counters.
+- [x] **M5-T2 Review items.** Editable drafts, approve/skip/regenerate, `needs_input` styling, char counters.
   - Read: `08` §4
   - AC: F6 AC1–AC2.
-- [~] **M5-T3 Fill approved.** Writes only approved, edited text; blocks over-limit items; shows final message.
+- [x] **M5-T3 Fill approved.** Writes only approved, edited text; blocks over-limit items; shows final message.
   - AC: F6 AC1–AC2; rerun does not overwrite user-changed fields.
-- [ ] **M5-T4 Error states.** All codes in `08` §4.6 with correct actions; standard fields still filled when drafting fails.
+- [x] **M5-T4 Error states.** All codes in `08` §4.6 with correct actions; standard fields still filled when drafting fails.
   - AC: F8 AC1–AC2.
-- [ ] **M5-T5 Submit-safety verification.** E2E asserts fixture submit handler never fires; copy states user submits.
+- [x] **M5-T5 Submit-safety verification.** E2E asserts fixture submit handler never fires; copy states user submits.
   - AC: F7 AC1–AC3.
 
 ## M6 — Hardening and release prep
 
-- [ ] **M6-T1 E2E suite.** Playwright: full flow on both fixtures with mocked Gemini.
+- [x] **M6-T1 E2E suite.** Playwright: full flow on both fixtures with mocked Gemini.
   - AC: Passes in CI headless.
-- [ ] **M6-T2 Security checklist.** Complete `09` §6 checklist.
+- [x] **M6-T2 Security checklist.** Complete `09` §6 checklist.
   - AC: Every box checked or exception documented.
 - [ ] **M6-T3 Manual test pass** on one real Greenhouse and one real Lever application (do not submit).
   - AC: Checklist in `11` §6 completed.
-- [ ] **M6-T4 README and privacy copy.** Setup, key creation, privacy notice, ToS note, screenshots/GIF.
+- [~] **M6-T4 README and privacy copy.** Setup, key creation, privacy notice, ToS note, screenshots/GIF.
   - AC: A new user can install and complete a fill from the README alone.
 - [ ] **M6-T5 Tag `v0.1.0`.** MVP definition of done met (`02` §5).
 
