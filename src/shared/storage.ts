@@ -12,7 +12,6 @@ export async function getProfile(): Promise<Profile | null> {
     return parsed.data
   }
 
-  console.warn('[Autoply] Invalid profile data in storage:', parsed.error)
   return null
 }
 
@@ -33,7 +32,6 @@ export async function getSettings(): Promise<Settings | null> {
     return parsed.data
   }
 
-  console.warn('[Autoply] Invalid settings data in storage:', parsed.error)
   return null
 }
 

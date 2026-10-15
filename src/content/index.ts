@@ -41,7 +41,7 @@ export async function runAutoplyScan(): Promise<{
 
   const formRoot = adapter.findFormRoot(document)
   if (!formRoot) {
-    overlay.setState('drafting')
+    overlay.showError({ code: 'NO_FIELDS', message: 'No fields detected.', retryable: false })
     return {
       adapterName: adapter.name,
       filledStandardCount: 0,
@@ -105,6 +105,13 @@ export async function runAutoplyScan(): Promise<{
             : null
         },
         items => fillApprovedItems(items, fieldsById),
+      )
+    } else if (response.success && 'error' in response.data) {
+      overlay.showError(response.data.error, () => void runAutoplyScan())
+    } else {
+      overlay.showError(
+        { code: 'BAD_MODEL_OUTPUT', message: 'Invalid draft response.', retryable: true },
+        () => void runAutoplyScan(),
       )
     }
   }

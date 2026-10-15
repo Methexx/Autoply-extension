@@ -1,10 +1,10 @@
 import { flushSync } from 'react-dom'
 import { createRoot, Root } from 'react-dom/client'
 import { useEffect, useState } from 'react'
-import { Draft, Question, ReviewItem } from '../../shared/schemas'
+import { AppError, Draft, Question, ReviewItem } from '../../shared/schemas'
 import styles from './overlay.css?inline'
 
-export type OverlayState = 'scanning' | 'drafting' | 'review' | 'filled'
+export type OverlayState = 'scanning' | 'drafting' | 'review' | 'filled' | 'error'
 export type RegenerateDraft = (question: Question, hint?: string) => Promise<Draft | null>
 export type FillApproved = (items: ReviewItem[]) => number
 
@@ -16,7 +16,19 @@ export interface OverlayController {
     fillApproved?: FillApproved,
   ) => void
   getReviewItems: () => ReviewItem[]
+  showError: (error: AppError, retry?: () => void) => void
   close: () => void
+}
+
+const ERROR_COPY: Record<AppError['code'], string> = {
+  NO_PROFILE: 'Add your profile first.',
+  NO_KEY: 'Add your Gemini API key to get drafts.',
+  INVALID_KEY: 'Gemini rejected your API key.',
+  RATE_LIMITED: "Gemini's rate limit was reached. Wait a minute, then try again.",
+  NETWORK: "Couldn't reach Gemini. Check your connection.",
+  BAD_MODEL_OUTPUT: "The model's answer couldn't be used.",
+  NO_FIELDS: "I couldn't find an application form on this page.",
+  UNSUPPORTED_PAGE: "This page isn't supported yet.",
 }
 
 const overLimit = (item: ReviewItem) =>
@@ -178,6 +190,21 @@ function ReviewPanel({
   )
 }
 
+function ErrorPanel({ error, retry, onClose }: { error: AppError; retry: (() => void) | undefined; onClose: () => void }) {
+  const opensOptions = error.code === 'NO_PROFILE' || error.code === 'NO_KEY' || error.code === 'INVALID_KEY'
+  const retryable = error.code === 'RATE_LIMITED' || error.code === 'NETWORK' || error.code === 'BAD_MODEL_OUTPUT'
+  const action = opensOptions ? 'Open options' : retryable ? 'Retry' : 'Close'
+  const runAction = () => {
+    if (opensOptions) {
+      void chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS', reason: error.code === 'NO_PROFILE' ? 'no_profile' : 'no_key' })
+      return
+    }
+    if (retryable) retry?.()
+    else onClose()
+  }
+  return <main className="autoply-content" aria-live="assertive"><p>{ERROR_COPY[error.code]}</p><button className="autoply-fill-approved" type="button" onClick={runAction}>{action}</button></main>
+}
+
 function Overlay({
   state,
   onClose,
@@ -186,6 +213,8 @@ function Overlay({
   regenerate,
   onFillApproved,
   filledCount,
+  error,
+  retry,
 }: {
   state: OverlayState
   onClose: () => void
@@ -194,6 +223,8 @@ function Overlay({
   regenerate: RegenerateDraft | undefined
   onFillApproved: (items: ReviewItem[]) => void
   filledCount: number
+  error: AppError | undefined
+  retry: (() => void) | undefined
 }) {
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -225,7 +256,7 @@ function Overlay({
           ×
         </button>
       </header>
-      {state === 'review' ? (
+      {state === 'error' && error ? <ErrorPanel error={error} retry={retry} onClose={onClose} /> : state === 'review' ? (
         <ReviewPanel
           key={reviewItems.map(item => item.question.id).join('|')}
           items={reviewItems}
@@ -262,6 +293,8 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
   let regenerate: RegenerateDraft | undefined
   let fillApproved: FillApproved | undefined
   let filledCount = 0
+  let error: AppError | undefined
+  let retry: (() => void) | undefined
   const close = () => {
     if (!root) return
     root.unmount()
@@ -286,6 +319,8 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
             render()
           }}
           filledCount={filledCount}
+          error={error}
+          retry={retry}
         />,
       ),
     )
@@ -303,6 +338,12 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
       render()
     },
     getReviewItems: () => reviewItems,
+    showError: (nextError, nextRetry) => {
+      error = nextError
+      retry = nextRetry
+      state = 'error'
+      render()
+    },
     close,
   }
 }

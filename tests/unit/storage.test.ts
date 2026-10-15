@@ -56,11 +56,10 @@ describe('Storage Wrapper', () => {
     expect(await getProfile()).toBeNull()
   })
 
-  it('getProfile returns null and warns if data is invalid', async () => {
+  it('getProfile returns null if data is invalid', async () => {
     mockStorage[STORAGE_KEY_PROFILE] = { fullName: 123 } // invalid
     const profile = await getProfile()
     expect(profile).toBeNull()
-    expect(console.warn).toHaveBeenCalled()
   })
 
   it('setProfile and getProfile round-trip valid data', async () => {

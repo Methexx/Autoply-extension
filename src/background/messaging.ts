@@ -65,7 +65,7 @@ export async function handleAppMessage(
         return {
           ok: false,
           error: {
-            code: 'INVALID_KEY',
+            code: 'NO_KEY',
             message: 'No Gemini API key stored. Please enter and save your key first.',
             retryable: false,
           },
@@ -96,7 +96,7 @@ export async function handleAppMessage(
         return {
           ok: false,
           error: {
-            code: 'INVALID_KEY',
+            code: 'NO_KEY',
             message: 'Add your Gemini API key in options.',
             retryable: false,
           },
@@ -108,7 +108,7 @@ export async function handleAppMessage(
         return {
           ok: false,
           error: {
-            code: 'NO_FIELDS',
+            code: 'NO_PROFILE',
             message: 'No profile found. Please set up your profile in options first.',
             retryable: false,
           },
@@ -167,7 +167,7 @@ export async function handleAppMessage(
         return {
           ok: false,
           error: {
-            code: 'INVALID_KEY',
+            code: 'NO_KEY',
             message: 'Add your Gemini API key in options.',
             retryable: false,
           },
@@ -179,7 +179,7 @@ export async function handleAppMessage(
         return {
           ok: false,
           error: {
-            code: 'NO_FIELDS',
+            code: 'NO_PROFILE',
             message: 'No profile found. Please set up your profile in options first.',
             retryable: false,
           },

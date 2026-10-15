@@ -81,7 +81,7 @@ describe('Background messaging pipeline', () => {
       const res = await handleAppMessage({ type: 'TEST_KEY' }, validSender)
       expect(res.ok).toBe(false)
       if (!res.ok) {
-        expect(res.error.code).toBe('INVALID_KEY')
+        expect(res.error.code).toBe('NO_KEY')
       }
     })
 
@@ -119,7 +119,7 @@ describe('Background messaging pipeline', () => {
       )
       expect(res.ok).toBe(false)
       if (!res.ok) {
-        expect(res.error.code).toBe('INVALID_KEY')
+        expect(res.error.code).toBe('NO_KEY')
       }
     })
 
@@ -133,7 +133,7 @@ describe('Background messaging pipeline', () => {
       )
       expect(res.ok).toBe(false)
       if (!res.ok) {
-        expect(res.error.code).toBe('NO_FIELDS')
+        expect(res.error.code).toBe('NO_PROFILE')
       }
     })
 
