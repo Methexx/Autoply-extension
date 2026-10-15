@@ -92,7 +92,7 @@ export function setRadioValue(
     const val = radio.value.trim().toLowerCase()
 
     if (label.includes(target) || target.includes(label) || val === target) {
-      // Hard rule: DO NOT call radio.click()
+      // Hard rule: do not activate the control programmatically.
       radio.checked = true
       radio.dispatchEvent(new Event('input', { bubbles: true }))
       radio.dispatchEvent(new Event('change', { bubbles: true }))

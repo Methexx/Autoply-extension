@@ -20,7 +20,7 @@ export const JOB_DESCRIPTION_MAX_CHARS = 4000 as const
 
 // CSS selectors that identify submit/apply buttons.
 // These are stored here so the lint guard and future tests share one list.
-// AGENTS.md hard rule §3.1: code must NEVER .click() any of these.
+// AGENTS.md hard rule §3.1: code must never activate any of these controls.
 export const SUBMIT_BUTTON_SELECTORS = [
   '[type=submit]',
   'button[data-qa="btn-submit"]', // Greenhouse

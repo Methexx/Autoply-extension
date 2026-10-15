@@ -20,8 +20,8 @@ const FORBIDDEN_PATTERNS: Array<{ pattern: RegExp; description: string }> = [
   {
     // Matches .click() on any identifier — the lint rule is more surgical
     // but the test catches it even if lint is suppressed
-    pattern: /\bsubmitBtn\s*\.\s*click\s*\(|\bapplyBtn\s*\.\s*click\s*\(/,
-    description: '.click() on a submit/apply button variable',
+    pattern: /\.click\s*\(/,
+    description: '.click() call',
   },
 ]
 
