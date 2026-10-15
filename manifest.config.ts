@@ -7,6 +7,7 @@ export default defineManifest({
   description: 'AI-drafted job application answers, reviewed by you before anything is submitted.',
   action: {
     default_title: 'Autoply: fill this application',
+    default_popup: 'src/popup/index.html',
     default_icon: {
       '16': 'icons/16.png',
       '48': 'icons/48.png',

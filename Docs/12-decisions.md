@@ -86,6 +86,12 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** Show raw provider errors (rejected: they can expose sensitive request context); show only a generic connection failure (rejected: not actionable).
 - **Status:** Accepted.
 
+### D-014 · Compact toolbar popup for the manual scan trigger
+- **Decision:** The toolbar action opens a compact popup containing one **Fill this page’s form** button. The page right-click menu remains an alternative trigger.
+- **Why:** Chrome and Edge do not allow extensions to add commands to the browser-owned extension-management menu. A first-party popup makes the explicit user action visible and reports whether Chrome blocked access to the page.
+- **Alternatives:** Rely only on the toolbar action (rejected: failures can appear silent); add commands to the browser-managed extension menu (not supported by the browser API).
+- **Status:** Accepted.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.

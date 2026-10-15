@@ -42,7 +42,7 @@ Behaviour:
 
 ## 3. Toolbar button (action)
 
-- Click = run Autoply on the active tab.
+- Click = opens a compact Autoply popup with a **Fill this page’s form** button. Pressing it runs Autoply on the active tab.
 - Right-click an eligible page and choose **Fill this page’s form with Autoply** for the same on-demand scan.
 - If no profile/key: opens the options page with a banner explaining what is missing.
 - Badge: none in the MVP.
@@ -108,4 +108,4 @@ Standard fields are still filled even if drafting fails, since they don't need t
 
 - Settings for tone presets, multiple profiles, themes.
 - Application history/tracker.
-- Popup window (the toolbar click acts directly).
+- Complex popup workflows beyond the single on-demand scan trigger.
