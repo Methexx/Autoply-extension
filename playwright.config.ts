@@ -11,6 +11,11 @@ export default defineConfig({
     // The actual launch context is set up in each test file
     trace: 'on-first-retry',
   },
+  webServer: {
+    command: 'pnpm exec vite preview --host 127.0.0.1 --port 4173',
+    url: 'http://127.0.0.1:4173',
+    reuseExistingServer: !process.env['CI'],
+  },
   projects: [
     {
       name: 'chromium-extension',

@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { resolve } from 'node:path'
 
-const contentScript = resolve(process.cwd(), 'dist/content.js')
+const contentScript = 'http://127.0.0.1:4173/content.js'
 
 const profile = {
   fullName: 'Alex Candidate',
@@ -20,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript((storedProfile) => {
     const profileKey = 'autoply_profile'
     const settingsKey = 'autoply_settings'
-    Object.defineProperty(window, 'chrome', {
+    Object.defineProperty(globalThis, 'chrome', {
       value: {
         runtime: {
           id: 'autoply-e2e',
@@ -43,6 +42,9 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('fills only an approved, edited draft and never submits', async ({ page }) => {
+  const pageErrors: string[] = []
+  page.on('pageerror', error => pageErrors.push(error.message))
+  await page.goto('http://127.0.0.1:4173')
   await page.setContent(`
     <form id="application"><label for="name">Full name</label><input id="name" name="name">
     <label for="email">Email</label><input id="email" type="email">
@@ -51,8 +53,12 @@ test('fills only an approved, edited draft and never submits', async ({ page }) 
     <script>window.submitted = false; document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); window.submitted = true })</script>
   `)
 
-  await page.addScriptTag({ path: contentScript })
-  await expect(page.getByText('Edited draft source.')).toBeVisible()
+  await page.addScriptTag({ url: contentScript, type: 'module' })
+  const overlay = page.locator('#autoply-root')
+  await expect(overlay, pageErrors.join('\n')).toBeAttached()
+  await expect
+    .poll(() => overlay.evaluate(host => host.shadowRoot?.textContent ?? ''))
+    .toContain('Edited draft source.')
   await expect(page.locator('#name')).toHaveValue('Alex Candidate')
   await expect(page.locator('#email')).toHaveValue('alex@example.com')
   await expect(page.locator('#q')).toHaveValue('')
@@ -68,8 +74,9 @@ test('fills only an approved, edited draft and never submits', async ({ page }) 
 })
 
 test('closing the overlay leaves open-ended fields untouched', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4173')
   await page.setContent('<form><input name="name"><input type="email"><textarea id="q">Keep me empty</textarea></form>')
-  await page.addScriptTag({ path: contentScript })
+  await page.addScriptTag({ url: contentScript, type: 'module' })
   await page.getByRole('button', { name: 'Close Autoply' }).click()
   await expect(page.locator('#q')).toHaveValue('Keep me empty')
 })
