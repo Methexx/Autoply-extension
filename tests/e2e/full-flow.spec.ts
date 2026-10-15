@@ -44,7 +44,7 @@ test.beforeEach(async ({ page }) => {
 test('fills only an approved, edited draft and never submits', async ({ page }) => {
   const pageErrors: string[] = []
   page.on('pageerror', error => pageErrors.push(error.message))
-  await page.goto('http://127.0.0.1:4173')
+  await page.goto('http://127.0.0.1:4173/src/options/index.html')
   await page.setContent(`
     <form id="application"><label for="name">Full name</label><input id="name" name="name">
     <label for="email">Email</label><input id="email" type="email">
@@ -65,16 +65,20 @@ test('fills only an approved, edited draft and never submits', async ({ page }) 
 
   const answer = page.locator('#autoply-root').locator('textarea').first()
   await answer.fill('My edited answer.')
-  await page.getByRole('button', { name: 'Approve' }).click()
-  await page.getByRole('button', { name: 'Fill approved (1)' }).click()
+  await page.getByRole('button', { name: 'Approve', exact: true }).click()
+  await page.getByRole('button', { name: 'Fill approved (1)', exact: true }).click()
 
   await expect(page.locator('#q')).toHaveValue('My edited answer.')
   await expect(page.getByText('Review the form, then submit it yourself.')).toBeVisible()
-  await expect(page.locator('form')).toEvaluate((form) => (form.ownerDocument.defaultView as Window & { submitted: boolean }).submitted).resolves.toBe(false)
+  expect(
+    await page.locator('form').evaluate(form =>
+      (form.ownerDocument.defaultView as Window & { submitted: boolean }).submitted,
+    ),
+  ).toBe(false)
 })
 
 test('closing the overlay leaves open-ended fields untouched', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4173')
+  await page.goto('http://127.0.0.1:4173/src/options/index.html')
   await page.setContent('<form><input name="name"><input type="email"><textarea id="q">Keep me empty</textarea></form>')
   await page.addScriptTag({ url: contentScript, type: 'module' })
   await page.getByRole('button', { name: 'Close Autoply' }).click()

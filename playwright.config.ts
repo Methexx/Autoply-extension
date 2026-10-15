@@ -13,7 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'pnpm exec vite preview --host 127.0.0.1 --port 4173',
-    url: 'http://127.0.0.1:4173',
+    url: 'http://127.0.0.1:4173/src/options/index.html',
     reuseExistingServer: !process.env['CI'],
   },
   projects: [
