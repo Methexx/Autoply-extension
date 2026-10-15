@@ -109,6 +109,19 @@ describe('Background messaging pipeline', () => {
         expect(res.error.code).toBe('RATE_LIMITED')
       }
     })
+
+    it('serializes an Error diagnostic as a plain response object', async () => {
+      vi.spyOn(storage, 'getSettings').mockResolvedValue(mockSettings)
+      vi.mocked(geminiProvider.testKey).mockRejectedValue(Object.assign(
+        new Error('The selected Gemini model is unavailable.'),
+        { code: 'BAD_MODEL_OUTPUT', retryable: false },
+      ))
+      const res = await handleAppMessage({ type: 'TEST_KEY' }, validSender)
+      expect(res).toEqual({
+        ok: false,
+        error: { code: 'BAD_MODEL_OUTPUT', message: 'The selected Gemini model is unavailable.', retryable: false },
+      })
+    })
   })
 
   describe('DRAFT_REQUEST handling', () => {

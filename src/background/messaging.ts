@@ -1,4 +1,4 @@
-import { AppMessageSchema, AppError, Draft, ExtractedProfile } from '../shared/schemas'
+import { AppMessageSchema, AppError, AppErrorSchema, Draft, ExtractedProfile } from '../shared/schemas'
 import { getProfile, getSettings } from '../shared/storage'
 import { toLlmProfile } from '../shared/profile'
 import { GEMINI_MODEL } from '../shared/constants'
@@ -11,8 +11,11 @@ export type MessageResponse =
   | { ok: false; error: AppError }
 
 function toAppError(err: unknown): AppError {
-  if (err && typeof err === 'object' && 'code' in err && 'message' in err) {
-    return err as AppError
+  if (err && typeof err === 'object' && 'code' in err && 'message' in err && 'retryable' in err) {
+    // Error.message is non-enumerable. Return a plain object so Chrome message
+    // serialization preserves the safe, user-facing diagnostic.
+    const parsed = AppErrorSchema.safeParse(err)
+    if (parsed.success) return parsed.data
   }
   if (err instanceof ParseError) {
     return {
