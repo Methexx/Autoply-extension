@@ -4,12 +4,17 @@ import { useEffect, useState } from 'react'
 import { Draft, Question, ReviewItem } from '../../shared/schemas'
 import styles from './overlay.css?inline'
 
-export type OverlayState = 'scanning' | 'drafting' | 'review'
+export type OverlayState = 'scanning' | 'drafting' | 'review' | 'filled'
 export type RegenerateDraft = (question: Question, hint?: string) => Promise<Draft | null>
+export type FillApproved = (items: ReviewItem[]) => number
 
 export interface OverlayController {
   setState: (state: OverlayState) => void
-  showReview: (items: ReviewItem[], regenerate?: RegenerateDraft) => void
+  showReview: (
+    items: ReviewItem[],
+    regenerate?: RegenerateDraft,
+    fillApproved?: FillApproved,
+  ) => void
   getReviewItems: () => ReviewItem[]
   close: () => void
 }
@@ -23,10 +28,12 @@ function ReviewPanel({
   items: initialItems,
   onChange,
   regenerate,
+  onFillApproved,
 }: {
   items: ReviewItem[]
   onChange: (items: ReviewItem[]) => void
   regenerate: RegenerateDraft | undefined
+  onFillApproved: (items: ReviewItem[]) => void
 }) {
   const [items, setItems] = useState(initialItems)
   const [hints, setHints] = useState<Record<string, string>>({})
@@ -159,6 +166,14 @@ function ReviewPanel({
           </article>
         )
       })}
+      <button
+        className="autoply-fill-approved"
+        type="button"
+        disabled={!items.some(item => item.state === 'approved')}
+        onClick={() => onFillApproved(items)}
+      >
+        Fill approved ({items.filter(item => item.state === 'approved').length})
+      </button>
     </main>
   )
 }
@@ -169,12 +184,16 @@ function Overlay({
   reviewItems,
   onReviewChange,
   regenerate,
+  onFillApproved,
+  filledCount,
 }: {
   state: OverlayState
   onClose: () => void
   reviewItems: ReviewItem[]
   onReviewChange: (items: ReviewItem[]) => void
   regenerate: RegenerateDraft | undefined
+  onFillApproved: (items: ReviewItem[]) => void
+  filledCount: number
 }) {
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -183,6 +202,7 @@ function Overlay({
     document.addEventListener('keydown', listener)
     return () => document.removeEventListener('keydown', listener)
   }, [onClose])
+  const completionMessage = `Filled ${filledCount} answers. Review the form, then submit it yourself.`
   const message = state === 'scanning' ? 'Scanning the form…' : 'Drafting answers with Gemini…'
   return (
     <aside
@@ -211,11 +231,12 @@ function Overlay({
           items={reviewItems}
           onChange={onReviewChange}
           regenerate={regenerate}
+          onFillApproved={onFillApproved}
         />
       ) : (
         <main className="autoply-content" aria-live="polite">
           <span className="autoply-spinner" aria-hidden="true" />
-          <p>{message}</p>
+          <p>{state === 'filled' ? completionMessage : message}</p>
         </main>
       )}
       <footer className="autoply-footer">Autoply never submits your application.</footer>
@@ -239,6 +260,8 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
   let state = initialState
   let reviewItems: ReviewItem[] = []
   let regenerate: RegenerateDraft | undefined
+  let fillApproved: FillApproved | undefined
+  let filledCount = 0
   const close = () => {
     if (!root) return
     root.unmount()
@@ -256,6 +279,13 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
             reviewItems = items
           }}
           regenerate={regenerate}
+          onFillApproved={items => {
+            reviewItems = items
+            filledCount = fillApproved?.(items) ?? 0
+            state = 'filled'
+            render()
+          }}
+          filledCount={filledCount}
         />,
       ),
     )
@@ -265,9 +295,10 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
       state = next
       render()
     },
-    showReview: (items, nextRegenerate) => {
+    showReview: (items, nextRegenerate, nextFillApproved) => {
       reviewItems = items
       regenerate = nextRegenerate
+      fillApproved = nextFillApproved
       state = 'review'
       render()
     },

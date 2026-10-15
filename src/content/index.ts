@@ -1,10 +1,12 @@
 import { getAdapterForPage } from './adapters'
+import { RawField } from './adapters/types'
 import { classifyField } from './detect/classify'
 import { fillStandardFields } from './fill/fill-standard'
 import { getProfile } from '../shared/storage'
 import { Draft, DraftReplySchema, Question, ReviewItem } from '../shared/schemas'
 import { mountOverlay } from './overlay/Overlay'
 import { extractJobContext } from './detect/job'
+import { fillApprovedItems } from './fill/fill-approved'
 
 function toReviewItems(questions: Question[], drafts: Draft[]): ReviewItem[] {
   const byId = new Map(drafts.map(draft => [draft.id, draft]))
@@ -48,6 +50,11 @@ export async function runAutoplyScan(): Promise<{
   }
 
   const rawFields = adapter.findFields(formRoot)
+  const fieldsById = new Map<string, RawField>()
+  for (const field of rawFields) {
+    const id = field.el.id || field.el.name
+    if (id) fieldsById.set(id, field)
+  }
   const openEndedQuestions: Question[] = []
 
   let qIndex = 0
@@ -97,6 +104,7 @@ export async function runAutoplyScan(): Promise<{
             ? (regenerated.data.drafts[0] ?? null)
             : null
         },
+        items => fillApprovedItems(items, fieldsById),
       )
     }
   }

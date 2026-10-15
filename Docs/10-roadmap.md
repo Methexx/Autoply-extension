@@ -78,7 +78,7 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
 - [~] **M5-T2 Review items.** Editable drafts, approve/skip/regenerate, `needs_input` styling, char counters.
   - Read: `08` §4
   - AC: F6 AC1–AC2.
-- [ ] **M5-T3 Fill approved.** Writes only approved, edited text; blocks over-limit items; shows final message.
+- [~] **M5-T3 Fill approved.** Writes only approved, edited text; blocks over-limit items; shows final message.
   - AC: F6 AC1–AC2; rerun does not overwrite user-changed fields.
 - [ ] **M5-T4 Error states.** All codes in `08` §4.6 with correct actions; standard fields still filled when drafting fails.
   - AC: F8 AC1–AC2.
