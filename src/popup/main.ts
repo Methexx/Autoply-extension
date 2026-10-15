@@ -23,7 +23,19 @@ async function startScan(): Promise<void> {
       return
     }
 
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => document.documentElement.removeAttribute('data-autoply-scan-ready'),
+    })
     await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
+    const checks = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => document.documentElement.getAttribute('data-autoply-scan-ready') === 'true',
+    })
+    if (!checks[0]?.result) {
+      setStatus('Autoply could not start on this page. Reload the extension, refresh this page, and try again.')
+      return
+    }
     setStatus('Scanning started. Check the page for the Autoply panel.')
   } catch {
     setStatus("Chrome blocked Autoply on this page. Check the extension's Site access setting and try again.")

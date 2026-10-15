@@ -92,6 +92,12 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** Rely only on the toolbar action (rejected: failures can appear silent); add commands to the browser-managed extension menu (not supported by the browser API).
 - **Status:** Accepted.
 
+### D-015 · Self-contained content-script bundle
+- **Decision:** Build the on-demand content script as a single classic `dist/content.js` bundle.
+- **Why:** Chrome/Edge scripting injection does not execute a bundled ES module that still contains `import` statements. A classic bundle makes the scan run immediately after the user presses the fill button.
+- **Alternatives:** Leave Vite code-splitting enabled (rejected: the browser accepts the injection request but the script does not run); declare an always-on content script (rejected: violates the on-demand permission model).
+- **Status:** Accepted.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.

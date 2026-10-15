@@ -66,6 +66,8 @@ Not requested: `tabs`, `<all_urls>`, `webRequest`, `cookies`, `history`. Do not 
 
 ## 5. Tooling configuration
 
+- The on-demand content script is emitted as one self-contained classic `dist/content.js` file. Chrome/Edge can inject that format through `chrome.scripting.executeScript`; an ES module with imports can appear to inject successfully but never run on the page.
+
 - `tsconfig.json`: `strict: true`, `noUncheckedIndexedAccess: true`, `target: ES2022`, `moduleResolution: bundler`, `types: ["chrome", "vite/client"]`.
 - ESLint: `@typescript-eslint`, `react-hooks`, rule `no-console` (warn) except in dev builds; custom rule or grep test forbidding `.submit(` / `requestSubmit` (see `07` and `11`).
 - Prettier: single quotes, no semicolons, 100 columns.

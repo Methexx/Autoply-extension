@@ -143,6 +143,7 @@ if (
   typeof chrome !== 'undefined' &&
   chrome.runtime?.id
 ) {
+  document.documentElement.setAttribute('data-autoply-scan-ready', 'true')
   window.__autoplyInjected = true
   void runAutoplyScan()
 }
