@@ -248,7 +248,16 @@ export async function handleAppMessage(
 export function registerMessageHandlers(): void {
   if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      void handleAppMessage(message, sender).then(sendResponse)
+      void handleAppMessage(message, sender)
+        .then(sendResponse)
+        .catch(() => sendResponse({
+          ok: false,
+          error: {
+            code: 'NETWORK',
+            message: 'Autoply could not process this request. Reload the extension and try again.',
+            retryable: true,
+          },
+        } satisfies MessageResponse))
       return true // Keep channel open for async response
     })
   }

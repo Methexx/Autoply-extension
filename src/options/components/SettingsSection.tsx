@@ -6,6 +6,13 @@ import { setSettings } from '../../shared/storage'
 import { Eye, EyeOff, Save, KeyRound, CheckCircle, XCircle } from 'lucide-react'
 import { GEMINI_MODEL } from '../../shared/constants'
 
+function extensionResponseError(message: string | undefined): string {
+  if (!message || /receiving end does not exist|could not establish connection|message port closed/i.test(message)) {
+    return 'Autoply’s service worker is not running. Reload the unpacked extension in chrome://extensions, then reopen this page.'
+  }
+  return 'Autoply could not contact its service worker. Reload the unpacked extension in chrome://extensions, then try again.'
+}
+
 export function SettingsSection({ initialData }: { initialData: Settings | null }) {
   const [showKey, setShowKey] = useState(false)
   const [testState, setTestState] = useState<'idle' | 'testing' | 'success' | 'error'>('idle')
@@ -50,6 +57,11 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
       const response = await new Promise<{ ok: boolean; error?: { message?: string } } | undefined>(
         (resolve) => {
           chrome.runtime.sendMessage({ type: 'TEST_KEY' }, (res: unknown) => {
+            const runtimeError = chrome.runtime.lastError?.message
+            if (runtimeError) {
+              resolve({ ok: false, error: { message: extensionResponseError(runtimeError) } })
+              return
+            }
             resolve(res as { ok: boolean; error?: { message?: string } } | undefined)
           })
         },
@@ -60,7 +72,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
         setTestMessage('Connection successful!')
       } else {
         setTestState('error')
-        setTestMessage(response?.error?.message || 'Autoply did not receive a response from Gemini. Check your connection and try again.')
+        setTestMessage(response?.error?.message || extensionResponseError(undefined))
       }
     } catch {
       setTestState('error')
