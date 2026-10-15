@@ -1,7 +1,7 @@
 import { DraftInput, LlmProvider } from './provider'
 import { buildSystemPrompt, buildUserPrompt } from './prompt'
 import { parseDrafts } from './parse'
-import { Draft, AppError, ErrorCode } from '../../shared/schemas'
+import { CvFile, Draft, AppError, ErrorCode, ExtractedProfile, ExtractedProfileSchema } from '../../shared/schemas'
 
 export class AppErrorImpl extends Error implements AppError {
   constructor(public code: ErrorCode, message: string, public retryable: boolean) {
@@ -27,6 +27,19 @@ const DRAFT_RESPONSE_SCHEMA = {
     }
   },
   required: ['drafts']
+}
+
+const CV_PROFILE_RESPONSE_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    fullName: { type: 'STRING' }, email: { type: 'STRING' }, phone: { type: 'STRING' }, location: { type: 'STRING' },
+    links: { type: 'OBJECT', properties: { linkedin: { type: 'STRING' }, github: { type: 'STRING' }, website: { type: 'STRING' } }, required: ['linkedin', 'github', 'website'] },
+    summary: { type: 'STRING' }, skills: { type: 'ARRAY', items: { type: 'STRING' } },
+    education: { type: 'ARRAY', items: { type: 'OBJECT', properties: { institution: { type: 'STRING' }, degree: { type: 'STRING' }, field: { type: 'STRING' }, startYear: { type: 'INTEGER' }, endYear: { type: 'INTEGER' }, notes: { type: 'STRING' } }, required: ['institution', 'degree'] } },
+    experience: { type: 'ARRAY', items: { type: 'OBJECT', properties: { organization: { type: 'STRING' }, role: { type: 'STRING' }, startDate: { type: 'STRING' }, endDate: { type: 'STRING' }, description: { type: 'STRING' } }, required: ['organization', 'role', 'description'] } },
+    projects: { type: 'ARRAY', items: { type: 'OBJECT', properties: { name: { type: 'STRING' }, description: { type: 'STRING' }, technologies: { type: 'ARRAY', items: { type: 'STRING' } }, url: { type: 'STRING' } }, required: ['name', 'description', 'technologies', 'url'] } },
+  },
+  required: ['fullName', 'email', 'phone', 'location', 'links', 'summary', 'skills', 'education', 'experience', 'projects'],
 }
 
 export const geminiProvider: LlmProvider = {
@@ -133,5 +146,35 @@ export const geminiProvider: LlmProvider = {
       }
       throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
     }
+  },
+
+  async extractProfileFromCv(file: CvFile, apiKey: string, model: string): Promise<ExtractedProfile> {
+    if (!apiKey) throw new AppErrorImpl('NO_KEY', 'Add your Gemini API key in options.', false)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({
+        contents: [{ parts: [
+          { text: 'Extract this CV into the supplied JSON schema. Use only facts explicitly present in the CV. Use empty strings or empty arrays when unknown. Do not invent dates, skills, links, achievements, or contact details.' },
+          { inlineData: { mimeType: file.mimeType, data: file.data } },
+        ] }],
+        generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: CV_PROFILE_RESPONSE_SCHEMA },
+      }),
+    }).catch(() => { throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true) })
+    if (!response.ok) {
+      if ([400, 401, 403].includes(response.status)) throw new AppErrorImpl('INVALID_KEY', 'Your Gemini API key was rejected. Check it in Autoply options.', false)
+      if (response.status === 429) throw new AppErrorImpl('RATE_LIMITED', "Gemini rate limit reached. Wait a minute and try again.", true)
+      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
+    }
+    const data: unknown = await response.json().catch(() => null)
+    const text = (data as { candidates?: { content?: { parts?: { text?: string }[] } }[] })?.candidates?.[0]?.content?.parts?.[0]?.text
+    if (!text) throw new AppErrorImpl('BAD_MODEL_OUTPUT', "The model returned an unusable answer. Try again.", true)
+    const parsed = ExtractedProfileSchema.safeParse(safelyParseJson(text))
+    if (!parsed.success) throw new AppErrorImpl('BAD_MODEL_OUTPUT', "The model returned an unusable answer. Try again.", true)
+    return parsed.data
   }
+}
+
+function safelyParseJson(text: string): unknown {
+  try { return JSON.parse(text) } catch { return null }
 }

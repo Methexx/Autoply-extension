@@ -41,6 +41,26 @@ export const ProfileSchema = z.object({
   projects: z.array(ProjectSchema).max(15),
 })
 
+// A CV can omit contact details or use a non-standard format. Keep extraction
+// permissive; the existing profile form performs final validation before save.
+export const ExtractedProfileSchema = z.object({
+  fullName: z.string().max(200),
+  email: z.string().max(320),
+  phone: z.string().max(100),
+  location: z.string().max(300),
+  links: z.object({ linkedin: z.string().max(500), github: z.string().max(500), website: z.string().max(500) }),
+  summary: z.string().max(1000),
+  skills: z.array(z.string().max(100)).max(60),
+  education: z.array(EducationSchema).max(10),
+  experience: z.array(ExperienceSchema).max(15),
+  projects: z.array(ProjectSchema).max(15),
+})
+
+export const CvFileSchema = z.object({
+  mimeType: z.enum(['application/pdf', 'text/plain']),
+  data: z.string().min(1).max(7_000_000),
+})
+
 export const SettingsSchema = z.object({
   geminiApiKey: z.string(),
   model: z.string(),
@@ -114,6 +134,7 @@ export const AppMessageSchema = z.discriminatedUnion('type', [
     hint: z.string().optional(),
   }),
   z.object({ type: z.literal('TEST_KEY') }),
+  z.object({ type: z.literal('CV_EXTRACT_REQUEST'), file: CvFileSchema }),
   z.object({
     type: z.literal('OPEN_OPTIONS'),
     reason: z.enum(['no_profile', 'no_key']),
@@ -131,6 +152,8 @@ export type Education = z.infer<typeof EducationSchema>
 export type Experience = z.infer<typeof ExperienceSchema>
 export type Project = z.infer<typeof ProjectSchema>
 export type Profile = z.infer<typeof ProfileSchema>
+export type ExtractedProfile = z.infer<typeof ExtractedProfileSchema>
+export type CvFile = z.infer<typeof CvFileSchema>
 export type Settings = z.infer<typeof SettingsSchema>
 
 export type FieldKind = z.infer<typeof FieldKindSchema>

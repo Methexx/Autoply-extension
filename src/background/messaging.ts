@@ -1,4 +1,4 @@
-import { AppMessageSchema, AppError, Draft } from '../shared/schemas'
+import { AppMessageSchema, AppError, Draft, ExtractedProfile } from '../shared/schemas'
 import { getProfile, getSettings } from '../shared/storage'
 import { toLlmProfile } from '../shared/profile'
 import { GEMINI_MODEL } from '../shared/constants'
@@ -7,7 +7,7 @@ import { DraftInput } from './llm/provider'
 import { ParseError } from './llm/parse'
 
 export type MessageResponse =
-  | { ok: true; drafts?: Draft[] }
+  | { ok: true; drafts?: Draft[]; profile?: ExtractedProfile }
   | { ok: false; error: AppError }
 
 function toAppError(err: unknown): AppError {
@@ -80,6 +80,18 @@ export async function handleAppMessage(
           ok: false,
           error: toAppError(err),
         }
+      }
+    }
+
+    case 'CV_EXTRACT_REQUEST': {
+      const settings = await getSettings()
+      if (!settings?.geminiApiKey) {
+        return { ok: false, error: { code: 'NO_KEY', message: 'Add your Gemini API key in options.', retryable: false } }
+      }
+      try {
+        return { ok: true, profile: await geminiProvider.extractProfileFromCv(msg.file, settings.geminiApiKey, settings.model || GEMINI_MODEL) }
+      } catch (err) {
+        return { ok: false, error: toAppError(err) }
       }
     }
 

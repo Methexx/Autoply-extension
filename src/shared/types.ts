@@ -8,6 +8,8 @@ export type {
   Experience,
   Project,
   Profile,
+  ExtractedProfile,
+  CvFile,
   Settings,
   FieldKind,
   Question,

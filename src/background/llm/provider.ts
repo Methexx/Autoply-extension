@@ -1,4 +1,4 @@
-import { Draft, JobContext, Question } from '../../shared/schemas'
+import { CvFile, Draft, ExtractedProfile, JobContext, Question } from '../../shared/schemas'
 import { LlmProfile } from '../../shared/profile'
 
 export interface DraftInput {
@@ -11,4 +11,5 @@ export interface DraftInput {
 export interface LlmProvider {
   draftAnswers(input: DraftInput, apiKey: string, model: string): Promise<Draft[]>
   testKey(apiKey: string, model: string): Promise<void>
+  extractProfileFromCv(file: CvFile, apiKey: string, model: string): Promise<ExtractedProfile>
 }

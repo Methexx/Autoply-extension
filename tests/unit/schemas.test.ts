@@ -87,6 +87,17 @@ describe('Zod Schemas', () => {
       }
       expect(() => AppMessageSchema.parse(msg)).not.toThrow()
     })
+
+    it('accepts only bounded PDF or text CV extraction requests', () => {
+      expect(() => AppMessageSchema.parse({
+        type: 'CV_EXTRACT_REQUEST',
+        file: { mimeType: 'application/pdf', data: 'cGRm' },
+      })).not.toThrow()
+      expect(() => AppMessageSchema.parse({
+        type: 'CV_EXTRACT_REQUEST',
+        file: { mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', data: 'docx' },
+      })).toThrow()
+    })
   })
 
   describe('DraftSchema & DraftReplySchema', () => {

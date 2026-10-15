@@ -8,6 +8,7 @@ vi.mock('../../src/background/llm/gemini', () => ({
   geminiProvider: {
     testKey: vi.fn(),
     draftAnswers: vi.fn(),
+    extractProfileFromCv: vi.fn(),
   },
 }))
 
@@ -207,6 +208,22 @@ describe('Background messaging pipeline', () => {
       if (!res.ok) {
         expect(res.error.code).toBe('RATE_LIMITED')
       }
+    })
+  })
+
+  describe('CV_EXTRACT_REQUEST handling', () => {
+    it('uses the service worker to extract a validated CV profile', async () => {
+      vi.spyOn(storage, 'getSettings').mockResolvedValue(mockSettings)
+      const extracted = { ...mockProfile, links: { linkedin: '', github: '', website: '' } }
+      vi.mocked(geminiProvider.extractProfileFromCv).mockResolvedValue(extracted)
+      const res = await handleAppMessage(
+        { type: 'CV_EXTRACT_REQUEST', file: { mimeType: 'text/plain', data: 'QWxpY2UgRGV2' } },
+        validSender,
+      )
+      expect(res).toEqual({ ok: true, profile: extracted })
+      expect(geminiProvider.extractProfileFromCv).toHaveBeenCalledWith(
+        { mimeType: 'text/plain', data: 'QWxpY2UgRGV2' }, 'test-api-key', 'gemini-1.5-flash',
+      )
     })
   })
 

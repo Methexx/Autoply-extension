@@ -11,7 +11,7 @@ Every job application asks the same questions again and again: contact details, 
 
 ## How it works
 
-1. Save your profile once (CV summary, skills, projects, links).
+1. Upload a PDF/plain-text CV to Gemini for extraction, or complete your profile manually. Review the editable suggestions and save them locally.
 2. Open a supported application form and click the Autoply toolbar button.
 3. Standard fields (name, email, links) are filled from your profile, with no AI involved.
 4. For open-ended questions, Autoply sends only the question, the job description, and the relevant profile facts to Gemini and shows you drafts.
@@ -72,7 +72,9 @@ pnpm build        # production build
 
 ## Privacy
 
-Autoply stores your profile and API key only in your browser. When you request drafts, it sends
+Autoply stores your profile and API key only in your browser. When you choose **Import CV with Gemini**,
+the selected PDF or plain-text CV is sent directly to Gemini for one-time extraction and is not stored by
+Autoply. When you request drafts, it sends
 the application questions, job description, and profile summary, skills, education, experience,
 and projects to Google's Gemini API using your own key. Contact details are not sent. Autoply has
 no servers, analytics, or automatic submission.

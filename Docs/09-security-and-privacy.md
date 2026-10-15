@@ -49,6 +49,13 @@ Autoply handles personal information (a CV-like profile) and an API key, and it 
 
 > Autoply stores your profile and API key only in your browser. When you request drafts, it sends the application questions, the job description, and your profile's summary, skills, education, experience and projects to Google's Gemini API using your own API key. Your contact details are never sent. Autoply has no servers, collects no analytics, and never submits an application for you.
 
+### CV import
+
+The CV importer accepts a user-selected PDF or plain-text file up to 5 MB. It requires a separate
+options-page consent checkbox before the file is sent directly to Gemini using the user's API key.
+Autoply does not store the original CV. Gemini returns structured suggestions, which remain editable
+and unsaved until the user explicitly saves the profile.
+
 ## 6. Extension hardening checklist
 
 - [x] Manifest permissions match `04-tech-stack.md` exactly.

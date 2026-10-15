@@ -4,12 +4,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ProfileSchema, Profile } from '../../shared/schemas'
 import { setProfile } from '../../shared/storage'
 import { User, Save, Plus, Trash2 } from 'lucide-react'
+import { CvImport } from './CvImport'
 
 export function ProfileSection({ initialData }: { initialData: Profile | null }) {
   const [isSaved, setIsSaved] = useState(false)
   const [skillInput, setSkillInput] = useState('')
 
-  const { register, control, handleSubmit, watch, setValue, formState: { errors, isDirty } } = useForm<Profile>({
+  const { register, control, handleSubmit, watch, setValue, reset, formState: { errors, isDirty } } = useForm<Profile>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: initialData || {
       fullName: '', email: '', phone: '', location: '',
@@ -48,8 +49,14 @@ export function ProfileSection({ initialData }: { initialData: Profile | null })
     setValue('skills', newSkills, { shouldDirty: true })
   }
 
+  const applyCv = (extracted: import('../../shared/schemas').ExtractedProfile) => {
+    const current = watch()
+    reset({ ...current, ...extracted, links: { ...current.links, ...extracted.links } }, { keepDefaultValues: true })
+  }
+
   return (
     <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }}>
+      <CvImport onExtracted={applyCv} />
       <section className="section">
         <div className="flex-gap mb-4">
           <User className="text-muted" size={24} />

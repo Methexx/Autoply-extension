@@ -74,6 +74,12 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
   (not needed for this MVP).
 - **Status:** Accepted.
 
+### D-012 · Explicit-consent CV extraction with Gemini
+- **Decision:** The options page may send a user-selected PDF or plain-text CV directly to Gemini for a one-time structured profile extraction after a clear consent checkbox is selected.
+- **Why:** It removes the largest setup burden while preserving review: extracted values remain editable and unsaved until the user saves the profile.
+- **Alternatives:** Local-only parsing (limited format support); storing the original file (rejected: unnecessary personal-data retention); extracting without consent (rejected).
+- **Status:** Accepted.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.

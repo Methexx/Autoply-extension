@@ -78,4 +78,18 @@ describe('gemini module', () => {
       expect(drafts[0]!.answer).toBe('Because')
     })
   })
+
+  describe('extractProfileFromCv', () => {
+    it('sends CV bytes as inline data and validates the structured result', async () => {
+      const extracted = {
+        fullName: 'Jane Doe', email: 'jane@example.com', phone: '', location: '',
+        links: { linkedin: '', github: '', website: '' }, summary: 'Engineer.', skills: ['TypeScript'],
+        education: [], experience: [], projects: [],
+      }
+      mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(extracted) }] } }] }) })
+      await expect(geminiProvider.extractProfileFromCv({ mimeType: 'application/pdf', data: 'cGRm' }, 'key', 'model')).resolves.toEqual(extracted)
+      expect(mockFetch.mock.calls[0]?.[1]?.body).toContain('application/pdf')
+      expect(mockFetch.mock.calls[0]?.[1]?.body).toContain('cGRm')
+    })
+  })
 })
