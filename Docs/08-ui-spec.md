@@ -43,6 +43,7 @@ Behaviour:
 ## 3. Toolbar button (action)
 
 - Click = run Autoply on the active tab.
+- Right-click an eligible page and choose **Fill this page’s form with Autoply** for the same on-demand scan.
 - If no profile/key: opens the options page with a banner explaining what is missing.
 - Badge: none in the MVP.
 

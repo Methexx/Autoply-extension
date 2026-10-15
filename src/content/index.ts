@@ -91,8 +91,13 @@ export async function runAutoplyScan(): Promise<{
     filledStandardCount = filled.length
   }
 
-  overlay.setState('drafting')
-  if (openEndedQuestions.length > 0) {
+  if (openEndedQuestions.length === 0) {
+    const message = filledStandardCount > 0
+      ? `Filled ${filledStandardCount} standard ${filledStandardCount === 1 ? 'field' : 'fields'}. Review the form, then submit it yourself.`
+      : 'I found form fields, but none match your saved profile.'
+    overlay.showFilled(message)
+  } else {
+    overlay.setState('drafting')
     const job = extractJobContext(url, document)
     const response = DraftReplySchema.safeParse(
       await sendMessage({ type: 'DRAFT_REQUEST', job, questions: openEndedQuestions }),

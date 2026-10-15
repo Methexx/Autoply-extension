@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { handleActionClick } from '../../src/background/index'
+import { FILL_FORM_CONTEXT_MENU_ID, handleActionClick, registerContextMenu } from '../../src/background/index'
 import * as storage from '../../src/shared/storage'
 import { runAutoplyScan } from '../../src/content/index'
 
@@ -22,6 +22,9 @@ describe('On-demand injection (M4-T8)', () => {
         onClicked: {
           addListener: vi.fn(),
         },
+        setBadgeText: vi.fn(),
+        setBadgeBackgroundColor: vi.fn(),
+        setTitle: vi.fn(),
       },
     } as unknown as typeof chrome
   })
@@ -98,6 +101,41 @@ describe('On-demand injection (M4-T8)', () => {
 
     expect(chrome.runtime.openOptionsPage).not.toHaveBeenCalled()
     expect(chrome.scripting.executeScript).not.toHaveBeenCalled()
+    expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ tabId: 101, text: '!' })
+  })
+
+  it('shows an action error when Chrome blocks script injection', async () => {
+    vi.spyOn(storage, 'getProfile').mockResolvedValue({
+      fullName: 'Alice', email: 'alice@example.com', phone: '123', location: 'SF', links: {},
+      summary: 'Summary', skills: [], education: [], experience: [], projects: [],
+    })
+    vi.spyOn(storage, 'getSettings').mockResolvedValue({
+      geminiApiKey: 'valid-key', model: 'gemini-1.5-flash', jobTextMaxChars: 4000,
+    })
+    vi.mocked(chrome.scripting.executeScript).mockRejectedValue(new Error('Access denied'))
+
+    await handleActionClick({ id: 101, url: 'https://example.com/apply' } as chrome.tabs.Tab)
+
+    expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ tabId: 101, text: '!' })
+    expect(chrome.action.setTitle).toHaveBeenCalledWith(expect.objectContaining({ tabId: 101 }))
+  })
+
+  it('adds the Fill this page form context-menu action', () => {
+    const onClicked = { addListener: vi.fn() }
+    const removeAll = vi.fn((callback: () => void) => callback())
+    const create = vi.fn()
+    global.chrome = {
+      ...chrome,
+      contextMenus: { removeAll, create, onClicked },
+    } as unknown as typeof chrome
+
+    registerContextMenu()
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({
+      id: FILL_FORM_CONTEXT_MENU_ID,
+      title: 'Fill this page’s form with Autoply',
+    }))
+    expect(onClicked.addListener).toHaveBeenCalled()
   })
 
   it('runs scan in content script and detects fields', async () => {
@@ -146,6 +184,20 @@ describe('On-demand injection (M4-T8)', () => {
     expect(result.openEndedQuestions).toEqual([])
     expect(document.getElementById('autoply-root')?.shadowRoot?.textContent).toContain(
       "I couldn't find an application form on this page.",
+    )
+  })
+
+  it('confirms standard-only fills instead of leaving the panel drafting', async () => {
+    document.body.innerHTML = '<form><label for="email">Email</label><input id="email" type="email" /></form>'
+    vi.spyOn(storage, 'getProfile').mockResolvedValue({
+      fullName: 'Marie Curie', email: 'marie@example.com', phone: '', location: '', links: {},
+      summary: '', skills: [], education: [], experience: [], projects: [],
+    })
+
+    await runAutoplyScan()
+
+    expect(document.getElementById('autoply-root')?.shadowRoot?.textContent).toContain(
+      'Filled 1 standard field.',
     )
   })
 })

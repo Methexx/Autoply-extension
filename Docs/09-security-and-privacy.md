@@ -58,7 +58,7 @@ and unsaved until the user explicitly saves the profile.
 
 ## 6. Extension hardening checklist
 
-- [x] Manifest permissions match `04-tech-stack.md` exactly.
+- [x] Manifest permissions match `04-tech-stack.md` exactly; `contextMenus` only adds an explicit user-triggered menu action.
 - [x] No remotely hosted code; no `eval`, no `new Function`.
 - [x] Content Security Policy left at the MV3 default (no relaxing).
 - [x] Message handlers verify `sender.id` and validate payloads with Zod.
@@ -70,7 +70,7 @@ and unsaved until the user explicitly saves the profile.
 ### Verification evidence (2026-10-16)
 
 - `manifest.config.ts` was compared with `04-tech-stack.md` §3: only `storage`,
-  `activeTab`, `scripting`, and Gemini's host permission are present. No custom CSP is set.
+  `activeTab`, `scripting`, `contextMenus`, and Gemini's host permission are present. No custom CSP is set.
 - Source scans found no `eval`, `new Function`, `dangerouslySetInnerHTML`, or production
   `console.*` calls. The forbidden-call guard covers `.submit(`, `requestSubmit(`, and `.click(`.
 - `handleAppMessage` checks `sender.id` and parses every message with `AppMessageSchema`.

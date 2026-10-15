@@ -38,7 +38,7 @@ export default defineManifest({
   action: { default_title: 'Autoply: fill this application' },
   background: { service_worker: 'src/background/index.ts', type: 'module' },
   options_page: 'src/options/index.html',
-  permissions: ['storage', 'activeTab', 'scripting'],
+  permissions: ['storage', 'activeTab', 'scripting', 'contextMenus'],
   host_permissions: ['https://generativelanguage.googleapis.com/*'],
   icons: { '16': 'icons/16.png', '48': 'icons/48.png', '128': 'icons/128.png' }
 })
@@ -51,6 +51,7 @@ export default defineManifest({
 | `storage` | Profile, key, settings | n/a |
 | `activeTab` | Grants access to the current tab only after the user clicks the toolbar button | Avoids always-on access to every site |
 | `scripting` | Inject the content script on demand | n/a |
+| `contextMenus` | Provides the user-triggered “Fill this page’s form” right-click action | No page access by itself |
 | host `generativelanguage.googleapis.com` | Service worker calls Gemini | Only this host |
 
 Not requested: `tabs`, `<all_urls>`, `webRequest`, `cookies`, `history`. Do not add them without a decision-log entry.

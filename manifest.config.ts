@@ -18,7 +18,7 @@ export default defineManifest({
     type: 'module',
   },
   options_page: 'src/options/index.html',
-  permissions: ['storage', 'activeTab', 'scripting'],
+  permissions: ['storage', 'activeTab', 'scripting', 'contextMenus'],
   host_permissions: ['https://generativelanguage.googleapis.com/*'],
   icons: {
     '16': 'icons/16.png',

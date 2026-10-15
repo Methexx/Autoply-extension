@@ -17,6 +17,7 @@ export interface OverlayController {
   ) => void
   getReviewItems: () => ReviewItem[]
   showError: (error: AppError, retry?: () => void) => void
+  showFilled: (message: string) => void
   close: () => void
 }
 
@@ -213,6 +214,7 @@ function Overlay({
   regenerate,
   onFillApproved,
   filledCount,
+  completionMessage,
   error,
   retry,
 }: {
@@ -223,6 +225,7 @@ function Overlay({
   regenerate: RegenerateDraft | undefined
   onFillApproved: (items: ReviewItem[]) => void
   filledCount: number
+  completionMessage: string | undefined
   error: AppError | undefined
   retry: (() => void) | undefined
 }) {
@@ -233,7 +236,7 @@ function Overlay({
     document.addEventListener('keydown', listener)
     return () => document.removeEventListener('keydown', listener)
   }, [onClose])
-  const completionMessage = `Filled ${filledCount} answers. Review the form, then submit it yourself.`
+  const defaultCompletionMessage = `Filled ${filledCount} answers. Review the form, then submit it yourself.`
   const message = state === 'scanning' ? 'Scanning the form…' : 'Drafting answers with Gemini…'
   return (
     <aside
@@ -267,7 +270,7 @@ function Overlay({
       ) : (
         <main className="autoply-content" aria-live="polite">
           <span className="autoply-spinner" aria-hidden="true" />
-          <p>{state === 'filled' ? completionMessage : message}</p>
+          <p>{state === 'filled' ? (completionMessage ?? defaultCompletionMessage) : message}</p>
         </main>
       )}
       <footer className="autoply-footer">Autoply never submits your application.</footer>
@@ -293,6 +296,7 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
   let regenerate: RegenerateDraft | undefined
   let fillApproved: FillApproved | undefined
   let filledCount = 0
+  let completionMessage: string | undefined
   let error: AppError | undefined
   let retry: (() => void) | undefined
   const close = () => {
@@ -315,10 +319,12 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
           onFillApproved={items => {
             reviewItems = items
             filledCount = fillApproved?.(items) ?? 0
+            completionMessage = undefined
             state = 'filled'
             render()
           }}
           filledCount={filledCount}
+          completionMessage={completionMessage}
           error={error}
           retry={retry}
         />,
@@ -342,6 +348,11 @@ export function mountOverlay(initialState: OverlayState = 'scanning'): OverlayCo
       error = nextError
       retry = nextRetry
       state = 'error'
+      render()
+    },
+    showFilled: message => {
+      completionMessage = message
+      state = 'filled'
       render()
     },
     close,
