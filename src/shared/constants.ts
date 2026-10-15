@@ -11,7 +11,7 @@ export const SCHEMA_VERSION = 1 as const
 // Gemini model — keep as a constant so it's easy to update in one place.
 // Use a fast, low-cost Flash-class model; verify current ID at:
 // https://ai.google.dev/gemini-api/docs/models/gemini
-export const GEMINI_MODEL = 'gemini-1.5-flash' as const
+export const GEMINI_MODEL = 'gemini-2.5-flash' as const
 export const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent` as const
 
 // Maximum characters we'll send from the job description to the LLM.

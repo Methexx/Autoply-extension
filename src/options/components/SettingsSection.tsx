@@ -60,11 +60,11 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
         setTestMessage('Connection successful!')
       } else {
         setTestState('error')
-        setTestMessage(response?.error?.message || 'Connection failed.')
+        setTestMessage(response?.error?.message || 'Autoply did not receive a response from Gemini. Check your connection and try again.')
       }
-    } catch (err: unknown) {
+    } catch {
       setTestState('error')
-      setTestMessage(err instanceof Error ? err.message : 'Connection failed.')
+      setTestMessage('Autoply could not start the key test. Reload the options page and try again.')
     }
   }
 

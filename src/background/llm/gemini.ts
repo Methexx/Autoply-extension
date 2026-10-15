@@ -69,22 +69,14 @@ export const geminiProvider: LlmProvider = {
         }),
         signal: controller.signal
       })
-    } catch {
+    } catch (error) {
       clearTimeout(timeout)
-      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
+      throw mapFetchError(error)
     }
     
     clearTimeout(timeout)
     
-    if (!res.ok) {
-      if (res.status === 400 || res.status === 401 || res.status === 403) {
-        throw new AppErrorImpl('INVALID_KEY', 'Your Gemini API key was rejected. Check it in Autoply options.', false)
-      }
-      if (res.status === 429) {
-        throw new AppErrorImpl('RATE_LIMITED', "Gemini rate limit reached. Wait a minute and try again.", true)
-      }
-      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
-    }
+    if (!res.ok) throw mapGeminiStatus(res.status)
     
     let data: unknown
     try {
@@ -130,22 +122,14 @@ export const geminiProvider: LlmProvider = {
         }),
         signal: controller.signal
       })
-    } catch {
+    } catch (error) {
       clearTimeout(timeout)
-      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
+      throw mapFetchError(error)
     }
     
     clearTimeout(timeout)
     
-    if (!res.ok) {
-      if (res.status === 400 || res.status === 401 || res.status === 403) {
-        throw new AppErrorImpl('INVALID_KEY', 'Your Gemini API key was rejected. Check it in Autoply options.', false)
-      }
-      if (res.status === 429) {
-        throw new AppErrorImpl('RATE_LIMITED', "Gemini rate limit reached. Wait a minute and try again.", true)
-      }
-      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
-    }
+    if (!res.ok) throw mapGeminiStatus(res.status)
   },
 
   async extractProfileFromCv(file: CvFile, apiKey: string, model: string): Promise<ExtractedProfile> {
@@ -160,12 +144,8 @@ export const geminiProvider: LlmProvider = {
         ] }],
         generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: CV_PROFILE_RESPONSE_SCHEMA },
       }),
-    }).catch(() => { throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true) })
-    if (!response.ok) {
-      if ([400, 401, 403].includes(response.status)) throw new AppErrorImpl('INVALID_KEY', 'Your Gemini API key was rejected. Check it in Autoply options.', false)
-      if (response.status === 429) throw new AppErrorImpl('RATE_LIMITED', "Gemini rate limit reached. Wait a minute and try again.", true)
-      throw new AppErrorImpl('NETWORK', "Couldn't reach Gemini. Check your connection.", true)
-    }
+    }).catch(error => { throw mapFetchError(error) })
+    if (!response.ok) throw mapGeminiStatus(response.status)
     const data: unknown = await response.json().catch(() => null)
     const text = (data as { candidates?: { content?: { parts?: { text?: string }[] } }[] })?.candidates?.[0]?.content?.parts?.[0]?.text
     if (!text) throw new AppErrorImpl('BAD_MODEL_OUTPUT', "The model returned an unusable answer. Try again.", true)
@@ -177,4 +157,20 @@ export const geminiProvider: LlmProvider = {
 
 function safelyParseJson(text: string): unknown {
   try { return JSON.parse(text) } catch { return null }
+}
+
+function mapFetchError(error: unknown): AppErrorImpl {
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    return new AppErrorImpl('NETWORK', 'Gemini did not respond in time. Check your connection and try again.', true)
+  }
+  return new AppErrorImpl('NETWORK', "Could not reach Gemini. Check your internet connection and try again.", true)
+}
+
+function mapGeminiStatus(status: number): AppErrorImpl {
+  if (status === 401 || status === 403) return new AppErrorImpl('INVALID_KEY', 'Gemini rejected this API key. Confirm it is active and belongs to this Google project.', false)
+  if (status === 429) return new AppErrorImpl('RATE_LIMITED', 'Gemini rate limit reached. Wait a minute, then try again.', true)
+  if (status === 404) return new AppErrorImpl('BAD_MODEL_OUTPUT', 'The selected Gemini model is unavailable. Update Autoply and test the key again.', false)
+  if (status === 400) return new AppErrorImpl('BAD_MODEL_OUTPUT', 'Gemini rejected the request. Check that the API key has Gemini API access, then try again.', false)
+  if (status >= 500) return new AppErrorImpl('NETWORK', 'Gemini is temporarily unavailable. Try again in a few minutes.', true)
+  return new AppErrorImpl('NETWORK', `Gemini returned an unexpected service error (${status}). Try again later.`, true)
 }

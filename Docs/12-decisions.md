@@ -80,13 +80,18 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** Local-only parsing (limited format support); storing the original file (rejected: unnecessary personal-data retention); extracting without consent (rejected).
 - **Status:** Accepted.
 
+### D-013 · Gemini 2.5 Flash default and safe diagnostic messages
+- **Decision:** Use `gemini-2.5-flash` as the default model. Map HTTP status and timeout failures to actionable, safe messages rather than exposing a raw Gemini response.
+- **Why:** The former `gemini-1.5-flash` default can be unavailable. A missing model, rejected request, expired/unauthorised key, rate limit, timeout, and service outage need different next steps.
+- **Alternatives:** Show raw provider errors (rejected: they can expose sensitive request context); show only a generic connection failure (rejected: not actionable).
+- **Status:** Accepted.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.
 
 | ID | Question | Needed by |
 |----|----------|-----------|
-| Q-001 | Which exact Gemini model ID is the default, and what are the current free-tier limits? | M2-T3 |
 | Q-002 | Should the first/last name split be derived from `fullName`, or should the profile store them separately? | M4-T5 |
 | Q-003 | Should "location" ever be sent to the LLM for relocation-type questions (with an approval prompt)? | Post-MVP |
 | Q-005 | Do we ship a dev-only playground (M3-T4) in production builds? Default: no. | M3-T4 |

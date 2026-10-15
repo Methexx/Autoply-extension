@@ -39,6 +39,22 @@ describe('gemini module', () => {
       await expect(geminiProvider.testKey('key', 'model')).rejects.toMatchObject({ code: 'NETWORK' })
     })
 
+    it('explains when the configured Gemini model is unavailable', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 404 })
+      await expect(geminiProvider.testKey('key', 'model')).rejects.toMatchObject({
+        code: 'BAD_MODEL_OUTPUT',
+        message: 'The selected Gemini model is unavailable. Update Autoply and test the key again.',
+      })
+    })
+
+    it('explains malformed or unauthorized configuration without exposing the key', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 400 })
+      await expect(geminiProvider.testKey('key', 'model')).rejects.toMatchObject({
+        code: 'BAD_MODEL_OUTPUT',
+        message: 'Gemini rejected the request. Check that the API key has Gemini API access, then try again.',
+      })
+    })
+
     it('throws NETWORK on fetch throw', async () => {
       mockFetch.mockRejectedValueOnce(new Error('fail'))
       await expect(geminiProvider.testKey('key', 'model')).rejects.toMatchObject({ code: 'NETWORK' })
