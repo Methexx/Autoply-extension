@@ -80,9 +80,9 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** Local-only parsing (limited format support); storing the original file (rejected: unnecessary personal-data retention); extracting without consent (rejected).
 - **Status:** Accepted.
 
-### D-013 · Gemini 2.5 Flash default and safe diagnostic messages
-- **Decision:** Use `gemini-2.5-flash` as the default model. Map HTTP status and timeout failures to actionable, safe messages rather than exposing a raw Gemini response.
-- **Why:** The former `gemini-1.5-flash` default can be unavailable. A missing model, rejected request, expired/unauthorised key, rate limit, timeout, and service outage need different next steps.
+### D-013 · Gemini Flash default and safe diagnostic messages
+- **Decision:** Use `gemini-3.8-flash` as the default model. Map HTTP status and timeout failures to actionable, safe messages rather than exposing a raw Gemini response.
+- **Why:** The former `gemini-1.5-flash` default can be unavailable, and Gemini's current guidance directs new projects to the latest Flash models. A missing model, rejected request, expired/unauthorised key, rate limit, timeout, and service outage need different next steps.
 - **Alternatives:** Show raw provider errors (rejected: they can expose sensitive request context); show only a generic connection failure (rejected: not actionable).
 - **Status:** Accepted.
 
