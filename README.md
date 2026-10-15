@@ -73,10 +73,10 @@ pnpm build        # production build
 ## Privacy
 
 Autoply stores your profile and API key only in your browser. When you choose **Import CV with Gemini**,
-the selected PDF or plain-text CV is sent directly to Gemini for one-time extraction and is not stored by
+the selected PDF or plain-text CV (including any contact details it contains) is sent directly to Gemini for one-time extraction and is not stored by
 Autoply. When you request drafts, it sends
 the application questions, job description, and profile summary, skills, education, experience,
-and projects to Google's Gemini API using your own key. Contact details are not sent. Autoply has
+and projects to Google's Gemini API using your own key. Contact details are not sent for draft generation. Autoply has
 no servers, analytics, or automatic submission.
 
 Gemini free-tier terms may permit submitted content to be used to improve Google's products.
