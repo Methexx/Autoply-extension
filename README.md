@@ -20,7 +20,8 @@ Every job application asks the same questions again and again: contact details, 
 
 ## Status
 
-Pre-development. See [`docs/10-roadmap.md`](docs/10-roadmap.md) for milestones.
+MVP in progress. Greenhouse and Lever hosted forms are the supported targets; load the built
+extension unpacked while development continues.
 
 ## Principles
 
@@ -61,10 +62,28 @@ pnpm test:e2e     # Playwright against local HTML fixtures
 pnpm build        # production build
 ```
 
+## Install the unpacked extension
+
+1. Run `pnpm build`.
+2. Open `chrome://extensions`, enable **Developer mode**, then select **Load unpacked**.
+3. Choose this repository's `dist/` directory.
+4. Open Autoply's options page from the extension card, save a profile and Gemini API key, then
+   use **Test key** before visiting a supported application page.
+
+## Privacy
+
+Autoply stores your profile and API key only in your browser. When you request drafts, it sends
+the application questions, job description, and profile summary, skills, education, experience,
+and projects to Google's Gemini API using your own key. Contact details are not sent. Autoply has
+no servers, analytics, or automatic submission.
+
+Gemini free-tier terms may permit submitted content to be used to improve Google's products.
+Review Google's current Gemini API terms before using a free key with sensitive material.
+
 ## Terms-of-service note
 
 Some job sites restrict automated interaction. Autoply is designed as an assistive tool: it acts only on the page you have open, only after you click it, one application at a time, and never submits. You are responsible for following the terms of the sites you use.
 
 ## License
 
-TBD (MIT suggested).
+[MIT](LICENSE)
