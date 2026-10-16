@@ -75,7 +75,7 @@ export interface Project {
 export interface Settings {
   geminiApiKey: string        // never logged, never sent to content script
   model: string               // defaults to GEMINI_MODEL
-  jobTextMaxChars: number     // default 6000; truncation limit for job descriptions
+  jobTextMaxChars: number     // default 2500; truncation limit for job descriptions
 }
 ```
 

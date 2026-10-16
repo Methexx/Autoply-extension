@@ -126,6 +126,12 @@ export function isOpenEndedQuestion(field: RawField): boolean {
     return true
   }
 
+  // Some simple application forms use a single-line input for a message or
+  // cover letter and do not supply a character limit.
+  if (/\b(cover\s*letter|letter\s*of\s*interest|message to (the )?(hiring )?team|message)\b/i.test(label)) {
+    return true
+  }
+
   // Text inputs with high character limit (e.g. >= 100)
   if (field.kind === 'text' && field.maxLength && field.maxLength >= 100) {
     return true

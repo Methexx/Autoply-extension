@@ -16,7 +16,11 @@ export const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta
 
 // Maximum characters we'll send from the job description to the LLM.
 // Keeps prompt size and cost bounded.
-export const JOB_DESCRIPTION_MAX_CHARS = 4000 as const
+export const JOB_DESCRIPTION_MAX_CHARS = 2500 as const
+
+// Keep interactive drafts responsive. This is sufficient for a concise cover
+// letter while avoiding the model's much larger default output allowance.
+export const DRAFT_TIMEOUT_MS = 20_000 as const
 
 // CSS selectors that identify submit/apply buttons.
 // These are stored here so the lint guard and future tests share one list.

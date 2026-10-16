@@ -93,6 +93,24 @@ describe('gemini module', () => {
       expect(drafts).toHaveLength(1)
       expect(drafts[0]!.answer).toBe('Because')
     })
+
+    it('uses a bounded output budget for faster cover-letter drafts', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [{ content: { parts: [{ text: JSON.stringify({ drafts: [{ id: 'cover', status: 'ok', answer: 'Tailored letter.' }] }) }] } }],
+        }),
+      })
+      await geminiProvider.draftAnswers({
+        ...mockInput,
+        questions: [{ id: 'cover', label: 'Cover Letter', kind: 'textarea' }],
+      }, 'key', 'model')
+
+      const request = JSON.parse(String(mockFetch.mock.calls[0]?.[1]?.body)) as {
+        generationConfig: { maxOutputTokens: number }
+      }
+      expect(request.generationConfig.maxOutputTokens).toBe(420)
+    })
   })
 
   describe('extractProfileFromCv', () => {

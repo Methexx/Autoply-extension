@@ -111,6 +111,8 @@ Rules:
 8. Output only JSON matching the provided schema.
 ```
 
+For cover-letter/message fields, Autoply asks for a concise 120â€“180 word letter that ties one or two factual profile details to requirements stated in the job description. If the role, company, or description is absent, the model must not invent them.
+
 ## 6. User prompt layout
 
 ```
@@ -146,7 +148,8 @@ Retry policy: one automatic retry for `BAD_MODEL_OUTPUT` and for 5xx; for 429 do
 ## 8. Cost and limits control
 
 - One call per page (all questions batched).
-- Truncate `job.description` to `settings.jobTextMaxChars`.
+- Truncate `job.description` to 2,500 characters (or a smaller saved limit) before drafting.
+- Bound draft output tokens: concise answers receive a small budget; a cover letter receives 420 tokens. This keeps the interactive review flow responsive.
 - Send only the profile fields listed in `05-data-models.md`.
 - Do not send standard-field values.
 

@@ -1,7 +1,7 @@
 import { AppMessageSchema, AppError, AppErrorSchema, Draft, ExtractedProfile } from '../shared/schemas'
 import { getProfile, getSettings } from '../shared/storage'
 import { toLlmProfile } from '../shared/profile'
-import { GEMINI_MODEL } from '../shared/constants'
+import { GEMINI_MODEL, JOB_DESCRIPTION_MAX_CHARS } from '../shared/constants'
 import { geminiProvider } from './llm/gemini'
 import { DraftInput } from './llm/provider'
 import { ParseError } from './llm/parse'
@@ -130,7 +130,7 @@ export async function handleAppMessage(
         }
       }
 
-      const maxChars = settings.jobTextMaxChars || 4000
+      const maxChars = Math.min(settings.jobTextMaxChars || JOB_DESCRIPTION_MAX_CHARS, JOB_DESCRIPTION_MAX_CHARS)
       const draftInput: DraftInput = {
         profile: toLlmProfile(profile),
         job: {
@@ -201,7 +201,7 @@ export async function handleAppMessage(
         }
       }
 
-      const maxChars = settings.jobTextMaxChars || 4000
+      const maxChars = Math.min(settings.jobTextMaxChars || JOB_DESCRIPTION_MAX_CHARS, JOB_DESCRIPTION_MAX_CHARS)
       const draftInput: DraftInput = {
         profile: toLlmProfile(profile),
         job: {

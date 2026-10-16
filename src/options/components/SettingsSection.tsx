@@ -24,7 +24,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
     defaultValues: initialData || {
       geminiApiKey: '',
       model: GEMINI_MODEL,
-      jobTextMaxChars: 6000
+      jobTextMaxChars: 2500
     }
   })
 
@@ -51,7 +51,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
       await setSettings({
         geminiApiKey: currentKey,
         model: GEMINI_MODEL,
-        jobTextMaxChars: 6000,
+        jobTextMaxChars: 2500,
       })
 
       const response = await new Promise<{ ok: boolean; error?: { message?: string } } | undefined>(

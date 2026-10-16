@@ -2,6 +2,7 @@ import { DraftInput, LlmProvider } from './provider'
 import { buildSystemPrompt, buildUserPrompt } from './prompt'
 import { parseDrafts } from './parse'
 import { CvFile, Draft, AppError, ErrorCode, ExtractedProfile, ExtractedProfileSchema } from '../../shared/schemas'
+import { DRAFT_TIMEOUT_MS } from '../../shared/constants'
 
 export class AppErrorImpl extends Error implements AppError {
   constructor(public code: ErrorCode, message: string, public retryable: boolean) {
@@ -42,13 +43,21 @@ const CV_PROFILE_RESPONSE_SCHEMA = {
   required: ['fullName', 'email', 'phone', 'location', 'links', 'summary', 'skills', 'education', 'experience', 'projects'],
 }
 
+function outputTokenBudget(input: DraftInput): number {
+  const coverLetterCount = input.questions.filter(question =>
+    /\b(cover\s*letter|letter\s*of\s*interest|message to (the )?(hiring )?team|message)\b/i.test(question.label),
+  ).length
+  const otherQuestionCount = input.questions.length - coverLetterCount
+  return Math.min(1024, Math.max(192, coverLetterCount * 420 + otherQuestionCount * 220))
+}
+
 export const geminiProvider: LlmProvider = {
   async draftAnswers(input: DraftInput, apiKey: string, model: string): Promise<Draft[]> {
     if (!apiKey) throw new AppErrorImpl('NO_KEY', 'Add your Gemini API key in options.', false)
     
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 30000)
+    const timeout = setTimeout(() => controller.abort(), DRAFT_TIMEOUT_MS)
     
     let res: Response
     try {
@@ -63,6 +72,7 @@ export const geminiProvider: LlmProvider = {
           contents: [{ role: 'user', parts: [{ text: buildUserPrompt(input) }] }],
           generationConfig: {
             temperature: 0.4,
+            maxOutputTokens: outputTokenBudget(input),
             responseMimeType: 'application/json',
             responseSchema: DRAFT_RESPONSE_SCHEMA
           }

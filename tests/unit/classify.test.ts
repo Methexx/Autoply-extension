@@ -104,6 +104,10 @@ describe('Field classification (M4-T5)', () => {
         kind: 'text' as const,
         maxLength: 150,
       },
+      {
+        label: 'Message or Cover Letter',
+        kind: 'text' as const,
+      },
     ]
 
     for (const testCase of openEndedTestCases) {

@@ -25,6 +25,7 @@ describe('prompt module', () => {
     const sys = buildSystemPrompt()
     expect(sys).toContain('Use ONLY facts stated in PROFILE')
     expect(sys).not.toContain('Jane')
+    expect(sys).toContain('tailored')
   })
 
   it('buildUserPrompt includes profile, job, and questions without contact details', () => {
@@ -51,5 +52,14 @@ describe('prompt module', () => {
     const inputWithHint = { ...mockInput, hint: 'make it technical' }
     const userPrompt = buildUserPrompt(inputWithHint)
     expect(userPrompt).toContain('USER HINT: make it technical')
+  })
+
+  it('adds tailored guidance for a cover-letter field', () => {
+    const coverLetterInput: DraftInput = {
+      ...mockInput,
+      questions: [{ id: 'cover', label: 'Message or Cover Letter', kind: 'textarea' }],
+    }
+
+    expect(buildUserPrompt(coverLetterInput)).toContain('COVER LETTER GUIDANCE:')
   })
 })
