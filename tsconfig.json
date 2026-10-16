@@ -16,9 +16,8 @@
     "resolveJsonModule": true,
     "types": ["chrome", "vite/client", "node"],
     "outDir": "dist",
-    "baseUrl": ".",
     "paths": {
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": ["src", "tests/unit", "*.config.ts", "*.config.mjs"],
