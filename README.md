@@ -1,90 +1,165 @@
 # Autoply
 
-> AI-drafted job application answers, reviewed by you before anything is submitted.
-> Chrome extension · bring-your-own Gemini API key · local-first.
+> A local-first browser extension that fills the repetitive parts of a job application and drafts tailored answers for your review.
 
-Autoply fills the repetitive parts of job applications and drafts answers to open-ended questions using your own profile. **You review and approve every answer, and you always click Submit yourself.** Autoply never submits an application.
+Autoply is an assistive tool for job applications. It fills standard details from your saved profile, then uses your own Gemini API key to draft answers for open-ended questions such as **“Why do you want to work here?”** or **“Message / Cover Letter.”**
 
-## Why it exists
+You stay in control: AI-written text is never put into a form until you approve it, and Autoply never submits an application.
 
-Every job application asks the same questions again and again: contact details, links, "Why do you want to work here?", "Describe a project you're proud of". Autoply removes the copy-paste work while keeping a human in control of what is actually sent.
+## What Autoply does
+
+- Fills standard fields locally: name, email, phone, location, LinkedIn, GitHub, and website.
+- Detects open-ended questions, including message and cover-letter fields.
+- Drafts concise, job-specific cover letters using the stated role, company, job description, and facts in your profile.
+- Shows every AI draft in an editable review panel before it can be filled.
+- Leaves sensitive questions—such as salary, work authorisation, demographics, and consent—for you to answer yourself.
+- Supports Greenhouse and Lever application pages, plus a best-effort generic fallback for simple forms.
+
+## What Autoply never does
+
+- Never clicks **Apply**, **Submit**, or any other form button.
+- Never writes AI-generated text before you approve it.
+- Never creates accounts, solves CAPTCHAs, uploads a CV to an application, or applies in bulk.
+- Never sends your API key to a job site.
+- Never uses an Autoply backend, analytics, or telemetry.
 
 ## How it works
 
-1. Upload a PDF/plain-text CV to Gemini for extraction, or complete your profile manually. Review the editable suggestions and save them locally.
-2. Open a supported application form and click the Autoply toolbar button.
-3. Standard fields (name, email, links) are filled from your profile, with no AI involved.
-4. For open-ended questions, Autoply sends only the question, the job description, and the relevant profile facts to Gemini and shows you drafts.
-5. You edit and approve each draft. Only approved answers are written into the form.
-6. You review the form and click Submit yourself.
+```text
+Your saved profile ──> standard fields filled locally
+                         │
+Job page + relevant profile facts ──> Gemini ──> editable review panel
+                                                        │
+                                             You approve selected drafts
+                                                        │
+                                             Approved answers fill the form
+                                                        │
+                                              You review and submit yourself
+```
 
-## Status
+## Install it locally
 
-MVP in progress. Greenhouse and Lever hosted forms are the supported targets; load the built
-extension unpacked while development continues.
+Autoply is currently distributed as an unpacked extension for Chrome, Microsoft Edge, and other Chromium browsers.
 
-## Principles
+### 1. Build the extension
 
-- **Human gate:** nothing is filled from AI output until approved; Submit is never clicked by the extension.
-- **Local-first:** profile and answers live in `chrome.storage.local`. There is no Autoply backend.
-- **Bring your own key:** you supply your own Gemini API key.
-- **No fabrication:** the model may only use facts from your profile; otherwise it must return `NEEDS_INPUT`.
-
-## Documentation
-
-Read in this order:
-
-| # | Document | What it covers |
-|---|----------|----------------|
-| 1 | [Product overview](docs/01-product-overview.md) | Problem, users, goals, non-goals |
-| 2 | [MVP scope](docs/02-mvp-scope.md) | Feature list with IDs and acceptance criteria |
-| 3 | [Architecture](docs/03-architecture.md) | Components, message flow, folder structure |
-| 4 | [Tech stack](docs/04-tech-stack.md) | Tools, versions, manifest, permissions |
-| 5 | [Data models](docs/05-data-models.md) | Types, storage keys, validation |
-| 6 | [LLM integration](docs/06-llm-integration.md) | Gemini call, prompt, JSON contract, errors |
-| 7 | [Form detection & filling](docs/07-form-detection-and-filling.md) | Field detection, adapters, safe filling |
-| 8 | [UI spec](docs/08-ui-spec.md) | Options page and review overlay |
-| 9 | [Security & privacy](docs/09-security-and-privacy.md) | Threat model, data handling, hard rules |
-| 10 | [Roadmap](docs/10-roadmap.md) | Milestones and task list |
-| 11 | [Testing](docs/11-testing.md) | Test strategy, fixtures, manual checklist |
-| 12 | [Decisions](docs/12-decisions.md) | Decision log and open questions |
-
-AI coding agents: start with [`AGENTS.md`](AGENTS.md).
-
-## Development quick start
+Install [Node.js](https://nodejs.org/) 20+ and [pnpm](https://pnpm.io/), then run:
 
 ```bash
 pnpm install
-pnpm dev          # Vite + CRXJS, outputs to dist/
-# Chrome → chrome://extensions → Developer mode → Load unpacked → select dist/
-pnpm test         # unit tests (Vitest)
-pnpm test:e2e     # Playwright against local HTML fixtures
-pnpm build        # production build
+pnpm build
 ```
 
-## Install the unpacked extension
+### 2. Load the `dist` folder
 
-1. Run `pnpm build`.
-2. Open `chrome://extensions`, enable **Developer mode**, then select **Load unpacked**.
-3. Choose this repository's `dist/` directory.
-4. Open Autoply's options page from the extension card, save a profile and Gemini API key, then
-   use **Test key** before visiting a supported application page.
+**Chrome**
 
-## Privacy
+1. Open `chrome://extensions`.
+2. Turn on **Developer mode**.
+3. Select **Load unpacked**.
+4. Select this project's `dist` folder.
 
-Autoply stores your profile and API key only in your browser. When you choose **Import CV with Gemini**,
-the selected PDF or plain-text CV (including any contact details it contains) is sent directly to Gemini for one-time extraction and is not stored by
-Autoply. When you request drafts, it sends
-the application questions, job description, and profile summary, skills, education, experience,
-and projects to Google's Gemini API using your own key. Contact details are not sent for draft generation. Autoply has
-no servers, analytics, or automatic submission.
+**Microsoft Edge**
 
-Gemini free-tier terms may permit submitted content to be used to improve Google's products.
-Review Google's current Gemini API terms before using a free key with sensitive material.
+1. Open `edge://extensions`.
+2. Turn on **Developer mode**.
+3. Select **Load unpacked**.
+4. Select this project's `dist` folder.
 
-## Terms-of-service note
+After every code update, run `pnpm build`, then use **Reload** on the Autoply card and refresh the job page.
 
-Some job sites restrict automated interaction. Autoply is designed as an assistive tool: it acts only on the page you have open, only after you click it, one application at a time, and never submits. You are responsible for following the terms of the sites you use.
+## First-time setup
+
+1. Open **Autoply Options** from the browser extension menu.
+2. Add your profile manually, or select **Import CV with Gemini**.
+   - CV import accepts a PDF or plain-text file up to 5 MB.
+   - You must explicitly consent before the selected CV is sent to Gemini.
+   - Autoply does not store the original CV; review the extracted details and save the profile yourself.
+3. Create a Gemini API key in [Google AI Studio](https://aistudio.google.com/), paste it into the Gemini API Key field, and select **Test Key**.
+4. Save the key and profile.
+
+An OpenAI/ChatGPT API key is not supported yet. Current draft generation uses Gemini only.
+
+## Fill an application
+
+1. Open the actual application form—rather than a job listing page.
+2. Click the Autoply icon in the browser toolbar.
+3. Select **Fill this page’s form**.
+4. Autoply fills matching standard fields first.
+5. For open-ended questions, wait for the review panel.
+6. Edit, approve, skip, or regenerate each draft.
+7. Select **Fill approved**.
+8. Check the completed form and submit it yourself.
+
+You can also right-click inside a web page and select **Fill this page’s form with Autoply**.
+
+### Cover letters and messages
+
+For a field labelled **Cover Letter**, **Message**, or **Message to the hiring team**, Autoply asks Gemini to write a concise, tailored draft. It relates the job description to relevant facts from your saved profile, without inventing experience or making unsupported company claims. You can edit the result before approving it.
+
+## If something does not work
+
+| What you see | What to do |
+|---|---|
+| “I couldn't find an application form on this page.” | Open the actual application form. Embedded iframe forms and many non-ATS listing pages are not supported in this MVP. |
+| The popup says Chrome/Edge blocked Autoply | In the extension menu, set **Site access** to **Allow only when clicked** or **Allowed on this site**, reload the extension, then refresh the page. |
+| The page only has standard fields | Autoply shows a completion message after filling them. There is no AI draft panel when no open-ended question exists. |
+| Gemini rejects the key | Confirm that it is an active Gemini API key from Google AI Studio, save it, and use **Test Key** again. |
+| Gemini is rate-limited or temporarily unavailable | Wait briefly and use **Retry** in the review panel. |
+| Changes do not appear after updating code | Run `pnpm build`, reload Autoply in `chrome://extensions` or `edge://extensions`, and refresh the page. |
+
+## Privacy and data
+
+Autoply stores your profile and Gemini API key in `chrome.storage.local` inside your browser. There is no Autoply server.
+
+For normal draft generation, Autoply sends the following to Google Gemini using your own key:
+
+- application questions and selectable options;
+- job title, company, and a shortened job description;
+- profile summary, skills, education, experience, and projects.
+
+It does **not** send your email, phone number, location, links, API key, or values from unrelated fields for draft generation.
+
+If you explicitly use CV import, the selected CV—including contact information it contains—is sent once to Gemini for extraction. The original file is not stored by Autoply.
+
+Gemini free-tier terms may allow submitted content to be used to improve Google's products. Review Google's current terms before using a free key with sensitive information.
+
+## Supported browsers and sites
+
+- Browsers: Chrome, Microsoft Edge, and other Chromium-based browsers with Manifest V3 support.
+- Fully tested application platforms: Greenhouse and Lever.
+- Other simple HTML forms: best-effort generic support only.
+
+## Development
+
+```bash
+pnpm dev          # development build
+pnpm typecheck    # TypeScript validation
+pnpm lint         # ESLint
+pnpm test         # Vitest unit tests
+pnpm build        # production extension build
+pnpm test:e2e     # Playwright fixture tests
+```
+
+Automated tests use local fixtures and mocked Gemini responses only—never a real key or live job page.
+
+## Project status
+
+The MVP is close to release. Automated tests are in place; final real-page validation on one Greenhouse and one Lever application is still required. See the [roadmap](docs/10-roadmap.md) for the current checklist.
+
+## Terms of use
+
+Autoply is designed as a single-page, user-triggered assistant. You are responsible for following each job site's terms of service and for checking every answer before you submit an application.
+
+## Documentation
+
+- [Product overview](docs/01-product-overview.md)
+- [Architecture](docs/03-architecture.md)
+- [LLM integration](docs/06-llm-integration.md)
+- [Form detection and filling](docs/07-form-detection-and-filling.md)
+- [Security and privacy](docs/09-security-and-privacy.md)
+- [Testing](docs/11-testing.md)
+- [Decision log](docs/12-decisions.md)
 
 ## License
 
