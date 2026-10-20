@@ -1,4 +1,4 @@
-# Autoply
+ # Autoply
 
 > A local-first browser extension that fills the repetitive parts of a job application and drafts tailored answers for your review.
 
