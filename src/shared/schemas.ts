@@ -126,6 +126,13 @@ export const AppErrorSchema = z.object({
 
 export const AppMessageSchema = z.discriminatedUnion('type', [
   z.object({
+    type: z.literal('ASK_REQUEST'),
+    selection: z.string().min(1).max(4000),
+    context: z.string().max(2500),
+    pageTitle: z.string().max(300),
+    conversation: z.array(z.object({ role: z.enum(['user', 'assistant']), text: z.string().min(1).max(4000) })).max(12),
+  }),
+  z.object({
     type: z.literal('DRAFT_REQUEST'),
     job: JobContextSchema,
     questions: z.array(QuestionSchema),

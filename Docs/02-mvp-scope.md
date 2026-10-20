@@ -96,3 +96,7 @@ Options page where the user stores their profile locally.
 
 The project owner approved OpenAI drafting and opt-in cross-provider fallback in addition to Gemini. This supersedes earlier Gemini-only scope statements; all approval and submission safety rules remain unchanged.
 
+# Selected-text assistant (D-017)
+
+The project owner explicitly prioritized an on-demand Ask Autoply sidebar ahead of the remaining manual release work. It answers selected questions and follow-ups, provides copying, and does not fill or submit application forms. See D-017 for privacy and safety constraints.
+

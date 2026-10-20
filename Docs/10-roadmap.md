@@ -101,6 +101,8 @@ Goal: an empty extension builds, loads in Chrome, and tooling works.
 
 ## Post-MVP backlog (do not start before M6 is done)
 
+- [~] **Ask-T1 Ask Autoply sidebar** (explicitly prioritized by project owner; D-017). Selected-text context menu, contextual drafting, follow-up conversation, copy, privacy disclosure, and mocked tests; never fill or submit a form. Manual browser and provider-key checks remain required.
+
 - v1.1: saved answers (F9), tone hints (F10), profile export/import (F11), char-limit awareness polish (F12).
 - Chrome Web Store listing, `SECURITY.md`, privacy policy page.
 - Additional ATS adapters, multi-step form helpers.

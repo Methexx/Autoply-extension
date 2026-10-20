@@ -6,7 +6,7 @@
   "description": "AI-drafted job application answers, reviewed by you before anything is submitted.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && vite build --config vite.content.config.ts",
+    "build": "tsc --noEmit && vite build && vite build --config vite.content.config.ts && vite build --config vite.ask.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

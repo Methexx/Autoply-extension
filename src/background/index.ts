@@ -5,6 +5,7 @@ import { getProfile, getSettings } from '../shared/storage'
 registerMessageHandlers()
 
 export const FILL_FORM_CONTEXT_MENU_ID = 'autoply-fill-form'
+export const ASK_CONTEXT_MENU_ID = 'autoply-ask'
 const DEFAULT_ACTION_TITLE = 'Autoply: fill this application'
 const INJECTION_FAILURE_TITLE = "Autoply couldn't run on this page. Open an application form and try again."
 
@@ -58,10 +59,19 @@ export function registerContextMenu(): void {
       title: 'Fill this page’s form with Autoply',
       contexts: ['page', 'frame', 'editable'],
     })
+    chrome.contextMenus.create({ id: ASK_CONTEXT_MENU_ID, title: 'Ask Autoply about selected text', contexts: ['selection'] })
   })
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === FILL_FORM_CONTEXT_MENU_ID && tab) {
       void handleActionClick(tab, info.frameId)
+    }
+    if (info.menuItemId === ASK_CONTEXT_MENU_ID && tab?.id && info.selectionText?.trim()) {
+      const tabId = tab.id
+      const frameId = info.frameId ?? 0
+      const selection = info.selectionText.slice(0, 4000)
+      void chrome.scripting.executeScript({ target: { tabId, frameIds: [frameId] }, files: ['ask.js'] })
+        .then(() => chrome.tabs.sendMessage(tabId, { type: 'AUTOPLY_OPEN_ASK', selection }, { frameId }))
+        .catch(() => showInjectionFailure(tabId))
     }
   })
 }

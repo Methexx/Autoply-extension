@@ -98,6 +98,25 @@ describe('Background messaging pipeline', () => {
     expect(openaiProvider.draftAnswers).not.toHaveBeenCalled()
   })
 
+  it('sends selected text, bounded context and follow-ups to the chosen provider without contact details', async () => {
+    vi.spyOn(storage, 'getSettings').mockResolvedValue(mockSettings)
+    vi.spyOn(storage, 'getProfile').mockResolvedValue(mockProfile)
+    vi.mocked(geminiProvider.draftAnswers).mockResolvedValueOnce([{ id: 'chat', status: 'ok', answer: 'A response' }])
+    const result = await handleAppMessage({ type: 'ASK_REQUEST', selection: 'Why this role?', context: 'Example context', pageTitle: 'Job', conversation: [{ role: 'user', text: 'Make it short' }] }, validSender)
+    expect(result.ok).toBe(true)
+    const input = vi.mocked(geminiProvider.draftAnswers).mock.calls[0]?.[0]
+    expect(input?.chat?.conversation[0]?.text).toBe('Make it short')
+    expect(input?.job.description).toBe('Example context')
+    expect(input?.profile).not.toHaveProperty('email')
+    expect(input?.profile).not.toHaveProperty('phone')
+  })
+
+  it('rejects unbounded Ask Autoply requests', async () => {
+    const result = await handleAppMessage({ type: 'ASK_REQUEST', selection: 'x'.repeat(4001), context: '', pageTitle: '', conversation: [] }, validSender)
+    expect(result.ok).toBe(false)
+    expect(geminiProvider.draftAnswers).not.toHaveBeenCalled()
+  })
+
   it('rejects messages from unauthorized sender', async () => {
     const maliciousSender = { id: 'other-id' } as chrome.runtime.MessageSender
     const res = await handleAppMessage({ type: 'TEST_KEY' }, maliciousSender)

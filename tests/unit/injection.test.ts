@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { FILL_FORM_CONTEXT_MENU_ID, handleActionClick, registerContextMenu } from '../../src/background/index'
+import { ASK_CONTEXT_MENU_ID, FILL_FORM_CONTEXT_MENU_ID, handleActionClick, registerContextMenu } from '../../src/background/index'
 import * as storage from '../../src/shared/storage'
 import { runAutoplyScan } from '../../src/content/index'
 
@@ -135,7 +135,19 @@ describe('On-demand injection (M4-T8)', () => {
       id: FILL_FORM_CONTEXT_MENU_ID,
       title: 'Fill this page’s form with Autoply',
     }))
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ id: ASK_CONTEXT_MENU_ID, contexts: ['selection'] }))
     expect(onClicked.addListener).toHaveBeenCalled()
+  })
+
+  it('injects the assistant in the selected frame and passes the selection', async () => {
+    const onClicked = { addListener: vi.fn() }
+    const sendMessage = vi.fn().mockResolvedValue({ ok: true })
+    global.chrome = { ...chrome, tabs: { sendMessage }, contextMenus: { removeAll: vi.fn((callback: () => void) => callback()), create: vi.fn(), onClicked } } as unknown as typeof chrome
+    registerContextMenu()
+    const handler = onClicked.addListener.mock.calls[0]?.[0] as (info: object, tab: object) => void
+    handler({ menuItemId: ASK_CONTEXT_MENU_ID, selectionText: 'Why this role?', frameId: 3 }, { id: 101 })
+    await vi.waitFor(() => expect(sendMessage).toHaveBeenCalledWith(101, { type: 'AUTOPLY_OPEN_ASK', selection: 'Why this role?' }, { frameId: 3 }))
+    expect(chrome.scripting.executeScript).toHaveBeenCalledWith({ target: { tabId: 101, frameIds: [3] }, files: ['ask.js'] })
   })
 
   it('runs scan in content script and detects fields', async () => {

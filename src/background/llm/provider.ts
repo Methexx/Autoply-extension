@@ -6,6 +6,7 @@ export interface DraftInput {
   job: JobContext
   questions: Question[]
   hint?: string
+  chat?: { selection: string; conversation: { role: 'user' | 'assistant'; text: string }[] }
 }
 
 export interface LlmProvider {

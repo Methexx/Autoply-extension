@@ -89,6 +89,20 @@ export async function handleAppMessage(
   const msg = parsed.data
 
   switch (msg.type) {
+    case 'ASK_REQUEST': {
+      const settings = await getSettings()
+      if (!settings || !(settings.geminiApiKey || settings.openaiApiKey)) {
+        return { ok: false, error: { code: 'NO_KEY', message: 'Add a Gemini or OpenAI API key in Autoply options.', retryable: false } }
+      }
+      const profile = await getProfile()
+      const input: DraftInput = {
+        profile: profile ? toLlmProfile(profile) : { fullName: '', summary: '', skills: [], education: [], experience: [], projects: [] },
+        job: { title: msg.pageTitle, company: '', description: msg.context, url: '' },
+        questions: [{ id: 'chat', label: msg.selection, kind: 'textarea' }],
+        chat: { selection: msg.selection, conversation: msg.conversation },
+      }
+      return draftWithProviders(input, settings)
+    }
     case 'TEST_KEY': {
       const settings = await getSettings()
       const provider = msg.provider ?? 'gemini'

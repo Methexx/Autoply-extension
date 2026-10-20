@@ -111,3 +111,7 @@ Standard fields are still filled even if drafting fails, since they don't need t
 - Settings for tone presets, multiple profiles, themes.
 - Application history/tracker.
 - Complex popup workflows beyond the single on-demand scan trigger.
+# Ask Autoply sidebar (D-017)
+
+Selecting text and choosing **Ask Autoply about selected text** opens a separate sidebar. It shows the selected text, generates a first answer, accepts follow-ups, and lets the user copy an answer. Closing it never fills or submits the form. Its privacy notice explains that the selection, limited page text, relevant profile facts, and conversation go to the configured provider and possibly the fallback. Conversations remain in memory until the sidebar is closed.
+

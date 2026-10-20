@@ -38,7 +38,7 @@ export const openaiProvider = {
   },
   async draftAnswers(input: DraftInput, apiKey: string) {
     const response = await request(apiKey, {
-      input: [{ role: 'system', content: buildSystemPrompt() }, { role: 'user', content: buildUserPrompt(input) }],
+      input: [{ role: 'system', content: buildSystemPrompt(input) }, { role: 'user', content: buildUserPrompt(input) }],
       max_output_tokens: 1024,
       text: { format: { type: 'json_schema', name: 'draft_response', strict: true, schema: {
         type: 'object', additionalProperties: false, required: ['drafts'], properties: {

@@ -44,6 +44,7 @@ const CV_PROFILE_RESPONSE_SCHEMA = {
 }
 
 function outputTokenBudget(input: DraftInput): number {
+  if (input.chat) return 1024
   const coverLetterCount = input.questions.filter(question =>
     /\b(cover\s*letter|letter\s*of\s*interest|message to (the )?(hiring )?team|message)\b/i.test(question.label),
   ).length
@@ -68,7 +69,7 @@ export const geminiProvider: LlmProvider = {
           'x-goog-api-key': apiKey
         },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+          systemInstruction: { parts: [{ text: buildSystemPrompt(input) }] },
           contents: [{ role: 'user', parts: [{ text: buildUserPrompt(input) }] }],
           generationConfig: {
             temperature: 0.4,

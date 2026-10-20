@@ -171,3 +171,7 @@ Implement `LlmProvider` for another API (OpenAI, Anthropic, local Ollama) withou
 
 In addition to Gemini, the service worker supports OpenAI Responses API (`gpt-4.1-mini`, structured JSON, `store: false`) for drafts and key tests. A user may choose a preferred provider and explicitly enable fallback on technical failure. Successful `needs_input` responses are not failures. CV extraction remains Gemini-only.
 
+# Ask Autoply (D-017)
+
+Ask Autoply uses the existing draft provider, schema validation, key selection, and opt-in fallback. A dedicated assistant prompt includes a bounded selection, context, and conversation; it forbids inventing candidate facts and treats page-derived text as untrusted. Each follow-up includes bounded in-memory history. No new network destination is added.
+

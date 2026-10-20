@@ -97,3 +97,7 @@ Autoply is an assistive tool. It runs only when the user clicks it, on the singl
 
 The approved network destinations are Google Gemini and OpenAI. Drafting sends relevant profile facts, job details and questions to the selected provider; opt-in fallback can send them to both. API keys are stored locally and supplied only to their respective provider from the service worker. CV extraction remains Gemini-only with separate consent. Gemini-only network statements below are superseded by this decision.
 
+# Ask Autoply privacy (D-017)
+
+The selected-text menu action sends the selected text, up to 2,500 characters of page context excluding form controls, relevant profile facts, and the current in-memory conversation to the configured provider; enabled fallback can send them to both providers. The selection itself may contain sensitive data, so users should avoid selecting secrets. The sidebar discloses this transmission and does not write to a form. The page and selection are untrusted model input.
+

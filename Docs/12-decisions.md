@@ -103,6 +103,11 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Privacy:** Drafting sends relevant profile facts and job details to the selected provider; enabling fallback may send them to both providers and incur charges. No key is sent to page context.
 - **Status:** Accepted by the project owner.
 
+### D-017 · Ask Autoply selected-text assistant
+- **Decision:** A user-triggered selection context menu opens an on-page isolated sidebar and sends the selection, limited page text, conversation, and relevant profile facts to the configured provider to answer and refine job-application questions. No form is filled or submitted by this flow.
+- **Privacy:** Page context is limited, excludes form controls, and is treated as untrusted data. The sidebar discloses the provider transmission; chats are kept in memory only. Existing opt-in provider fallback applies.
+- **Status:** Accepted by the project owner.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.
