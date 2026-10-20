@@ -123,3 +123,7 @@ See the tree in `AGENTS.md` section 6; it is the canonical layout.
 - Forms embedded in cross-origin iframes (some company career pages embedding Greenhouse) are not supported in the MVP.
 - Single-page, multi-step wizards are handled one step at a time: the user clicks the button again on each step.
 - Workday and other heavily scripted ATS platforms are out of scope for the MVP.
+# Provider update (D-016)
+
+The service worker may call the user-selected Gemini or OpenAI API. With explicit fallback enabled it may call both on technical failure. Keys remain local to extension contexts; CV extraction remains Gemini-only. This decision supersedes Gemini-only network descriptions below.
+

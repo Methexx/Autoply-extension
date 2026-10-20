@@ -159,12 +159,12 @@ test('mapped draft errors preserve standard fills and expose only the documented
   })
   injectionCount++
   await page.addScriptTag({ url: `${contentScript}?e2e=${injectionCount}`, type: 'module' })
-  await expect(page.getByText("Gemini's rate limit was reached. Wait a minute, then try again.")).toBeVisible()
+  await expect(page.getByText('The AI provider rate limit was reached. Wait a minute, then try again.')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible()
   await expect(page.locator('#first_name')).toHaveValue('Alex')
   await expect(page.locator('#email')).toHaveValue('alex@example.com')
 
   await page.getByRole('button', { name: 'Retry', exact: true }).click()
-  await expect(page.getByText("Gemini's rate limit was reached. Wait a minute, then try again.")).toBeVisible()
+  await expect(page.getByText('The AI provider rate limit was reached. Wait a minute, then try again.')).toBeVisible()
   expect(await page.locator('form').evaluate(form => (form.ownerDocument.defaultView as Window).submitted)).toBe(false)
 })

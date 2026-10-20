@@ -23,10 +23,10 @@ export interface OverlayController {
 
 const ERROR_COPY: Record<AppError['code'], string> = {
   NO_PROFILE: 'Add your profile first.',
-  NO_KEY: 'Add your Gemini API key to get drafts.',
-  INVALID_KEY: 'Gemini rejected your API key.',
-  RATE_LIMITED: "Gemini's rate limit was reached. Wait a minute, then try again.",
-  NETWORK: "Couldn't reach Gemini. Check your connection.",
+  NO_KEY: 'Add a Gemini or OpenAI API key to get drafts.',
+  INVALID_KEY: 'Your AI provider rejected the API key.',
+  RATE_LIMITED: 'The AI provider rate limit was reached. Wait a minute, then try again.',
+  NETWORK: "Couldn't reach the AI provider. Check your connection.",
   BAD_MODEL_OUTPUT: "The model's answer couldn't be used.",
   NO_FIELDS: "I couldn't find an application form on this page.",
   UNSUPPORTED_PAGE: "This page isn't supported yet.",
@@ -237,7 +237,7 @@ function Overlay({
     return () => document.removeEventListener('keydown', listener)
   }, [onClose])
   const defaultCompletionMessage = `Filled ${filledCount} answers. Review the form, then submit it yourself.`
-  const message = state === 'scanning' ? 'Scanning the form…' : 'Drafting answers with Gemini…'
+  const message = state === 'scanning' ? 'Scanning the form…' : 'Drafting answers with your AI provider…'
   return (
     <aside
       className="autoply-panel"

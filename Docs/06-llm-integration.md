@@ -167,3 +167,7 @@ Retry policy: one automatic retry for `BAD_MODEL_OUTPUT` and for 5xx; for 429 do
 ## 11. Future: other providers
 
 Implement `LlmProvider` for another API (OpenAI, Anthropic, local Ollama) without touching callers. Out of MVP scope; record the decision in `12-decisions.md` before adding.
+# Provider update (D-016)
+
+In addition to Gemini, the service worker supports OpenAI Responses API (`gpt-4.1-mini`, structured JSON, `store: false`) for drafts and key tests. A user may choose a preferred provider and explicitly enable fallback on technical failure. Successful `needs_input` responses are not failures. CV extraction remains Gemini-only.
+

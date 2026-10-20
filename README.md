@@ -2,7 +2,7 @@
 
 > A local-first browser extension that fills the repetitive parts of a job application and drafts tailored answers for your review.
 
-Autoply is an assistive tool for job applications. It fills standard details from your saved profile, then uses your own Gemini API key to draft answers for open-ended questions such as **“Why do you want to work here?”** or **“Message / Cover Letter.”**
+Autoply is an assistive tool for job applications. It fills standard details from your saved profile, then uses your own Gemini or OpenAI API key to draft answers for open-ended questions such as **“Why do you want to work here?”** or **“Message / Cover Letter.”**
 
 You stay in control: AI-written text is never put into a form until you approve it, and Autoply never submits an application.
 
@@ -28,7 +28,7 @@ You stay in control: AI-written text is never put into a form until you approve 
 ```text
 Your saved profile ──> standard fields filled locally
                          │
-Job page + relevant profile facts ──> Gemini ──> editable review panel
+Job page + relevant profile facts ──> Gemini or OpenAI ──> editable review panel
                                                         │
                                              You approve selected drafts
                                                         │
@@ -75,10 +75,8 @@ After every code update, run `pnpm build`, then use **Reload** on the Autoply ca
    - CV import accepts a PDF or plain-text file up to 5 MB.
    - You must explicitly consent before the selected CV is sent to Gemini.
    - Autoply does not store the original CV; review the extracted details and save the profile yourself.
-3. Create a Gemini API key in [Google AI Studio](https://aistudio.google.com/), paste it into the Gemini API Key field, and select **Test Key**.
-4. Save the key and profile.
-
-An OpenAI/ChatGPT API key is not supported yet. Current draft generation uses Gemini only.
+3. Enter a Gemini API key from [Google AI Studio](https://aistudio.google.com/) or an OpenAI API key from the [OpenAI platform](https://platform.openai.com/api-keys), then use the corresponding **Test** button. A ChatGPT subscription alone is not an API key.
+4. Choose your preferred provider and save your settings and profile. If you have both keys, you can enable fallback: on a technical failure, Autoply will try the other provider. This may send the same drafting data to both providers and incur charges.
 
 ## Fill an application
 
@@ -95,7 +93,7 @@ You can also right-click inside a web page and select **Fill this page’s form 
 
 ### Cover letters and messages
 
-For a field labelled **Cover Letter**, **Message**, or **Message to the hiring team**, Autoply asks Gemini to write a concise, tailored draft. It relates the job description to relevant facts from your saved profile, without inventing experience or making unsupported company claims. You can edit the result before approving it.
+For a field labelled **Cover Letter**, **Message**, or **Message to the hiring team**, Autoply asks the selected provider to write a concise, tailored draft. It relates the job description to relevant facts from your saved profile, without inventing experience or making unsupported company claims. You can edit the result before approving it.
 
 ## If something does not work
 
@@ -110,19 +108,20 @@ For a field labelled **Cover Letter**, **Message**, or **Message to the hiring t
 
 ## Privacy and data
 
-Autoply stores your profile and Gemini API key in `chrome.storage.local` inside your browser. There is no Autoply server.
+Autoply stores your profile and configured API keys in `chrome.storage.local` inside your browser. There is no Autoply server.
 
-For normal draft generation, Autoply sends the following to Google Gemini using your own key:
+For normal draft generation, Autoply sends the following to your selected provider, Google Gemini or OpenAI, using your own key:
 
 - application questions and selectable options;
 - job title, company, and a shortened job description;
 - profile summary, skills, education, experience, and projects.
 
-It does **not** send your email, phone number, location, links, API key, or values from unrelated fields for draft generation.
+The draft content excludes your email, phone number, location, links, and unrelated field values. The selected provider receives its own API key for authentication; job sites do not receive it. If fallback is enabled, both providers may receive the draft content.
 
 If you explicitly use CV import, the selected CV—including contact information it contains—is sent once to Gemini for extraction. The original file is not stored by Autoply.
 
 Gemini free-tier terms may allow submitted content to be used to improve Google's products. Review Google's current terms before using a free key with sensitive information.
+Review OpenAI's current API data and billing terms as well before using an OpenAI key.
 
 ## Supported browsers and sites
 

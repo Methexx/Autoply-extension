@@ -98,6 +98,11 @@ Entry format: `D-NNN · Date · Decision · Why · Alternatives considered · St
 - **Alternatives:** Leave Vite code-splitting enabled (rejected: the browser accepts the injection request but the script does not run); declare an always-on content script (rejected: violates the on-demand permission model).
 - **Status:** Accepted.
 
+### D-016 · Optional OpenAI drafting and fallback
+- **Decision:** Permit the service worker to call Gemini and OpenAI using locally stored user keys. The user selects a primary provider and can explicitly enable fallback to the other provider on technical failure. CV extraction remains Gemini-only.
+- **Privacy:** Drafting sends relevant profile facts and job details to the selected provider; enabling fallback may send them to both providers and incur charges. No key is sent to page context.
+- **Status:** Accepted by the project owner.
+
 ## Open questions
 
 Resolve these before or during the milestone noted; then move the answer into the decisions list.

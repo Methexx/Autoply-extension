@@ -20,7 +20,7 @@ export default defineManifest({
   },
   options_page: 'src/options/index.html',
   permissions: ['storage', 'activeTab', 'scripting', 'contextMenus'],
-  host_permissions: ['https://generativelanguage.googleapis.com/*'],
+  host_permissions: ['https://generativelanguage.googleapis.com/*', 'https://api.openai.com/*'],
   icons: {
     '16': 'icons/16.png',
     '48': 'icons/48.png',

@@ -93,3 +93,7 @@ Autoply is an assistive tool. It runs only when the user clicks it, on the singl
 - Single-purpose description.
 - Justify each permission (table in section 3 of `04-tech-stack.md`).
 - Disclose that user data is sent to a third party API (Google Gemini) at the user's request.
+# Provider update (D-016)
+
+The approved network destinations are Google Gemini and OpenAI. Drafting sends relevant profile facts, job details and questions to the selected provider; opt-in fallback can send them to both. API keys are stored locally and supplied only to their respective provider from the service worker. CV extraction remains Gemini-only with separate consent. Gemini-only network statements below are superseded by this decision.
+

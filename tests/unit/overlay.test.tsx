@@ -21,7 +21,7 @@ describe('review overlay shell', () => {
     expect(host?.shadowRoot?.querySelector('style')).not.toBeNull()
 
     await act(async () => controller.setState('drafting'))
-    expect(host?.shadowRoot?.textContent).toContain('Drafting answers with Gemini…')
+    expect(host?.shadowRoot?.textContent).toContain('Drafting answers with your AI provider…')
   })
 
   it('closes on Escape without altering page content', async () => {
@@ -38,10 +38,10 @@ describe('review overlay shell', () => {
 
   it.each([
     ['NO_PROFILE', 'Add your profile first.', 'Open options'],
-    ['NO_KEY', 'Add your Gemini API key to get drafts.', 'Open options'],
-    ['INVALID_KEY', 'Gemini rejected your API key.', 'Open options'],
-    ['RATE_LIMITED', "Gemini's rate limit was reached. Wait a minute, then try again.", 'Retry'],
-    ['NETWORK', "Couldn't reach Gemini. Check your connection.", 'Retry'],
+    ['NO_KEY', 'Add a Gemini or OpenAI API key to get drafts.', 'Open options'],
+    ['INVALID_KEY', 'Your AI provider rejected the API key.', 'Open options'],
+    ['RATE_LIMITED', 'The AI provider rate limit was reached. Wait a minute, then try again.', 'Retry'],
+    ['NETWORK', "Couldn't reach the AI provider. Check your connection.", 'Retry'],
     ['BAD_MODEL_OUTPUT', "The model's answer couldn't be used.", 'Retry'],
     ['NO_FIELDS', "I couldn't find an application form on this page.", 'Close'],
     ['UNSUPPORTED_PAGE', "This page isn't supported yet.", 'Close'],

@@ -19,7 +19,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
   const [testMessage, setTestMessage] = useState('')
   const [isSaved, setIsSaved] = useState(false)
 
-  const { register, handleSubmit, watch, formState: { errors, isDirty } } = useForm<Settings>({
+  const { register, handleSubmit, getValues, formState: { errors, isDirty } } = useForm<Settings>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: initialData || {
       geminiApiKey: '',
@@ -28,16 +28,15 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
     }
   })
 
-  const currentKey = watch('geminiApiKey')
-
   const onSubmit = async (data: Settings) => {
     await setSettings(data)
     setIsSaved(true)
     setTimeout(() => setIsSaved(false), 3000)
   }
 
-  const onTestKey = async () => {
-    if (!currentKey) {
+  const onTestKey = async (provider: 'gemini' | 'openai') => {
+    const values = getValues()
+    if (!(provider === 'gemini' ? values.geminiApiKey : values.openaiApiKey)) {
       setTestState('error')
       setTestMessage('Please enter a key first.')
       return
@@ -48,15 +47,11 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
     
     try {
       // Ensure key is saved in storage so service worker can read it
-      await setSettings({
-        geminiApiKey: currentKey,
-        model: GEMINI_MODEL,
-        jobTextMaxChars: 2500,
-      })
+      await setSettings(values)
 
       const response = await new Promise<{ ok: boolean; error?: { message?: string } } | undefined>(
         (resolve) => {
-          chrome.runtime.sendMessage({ type: 'TEST_KEY' }, (res: unknown) => {
+          chrome.runtime.sendMessage({ type: 'TEST_KEY', provider }, (res: unknown) => {
             const runtimeError = chrome.runtime.lastError?.message
             if (runtimeError) {
               resolve({ ok: false, error: { message: extensionResponseError(runtimeError) } })
@@ -69,7 +64,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
 
       if (response?.ok) {
         setTestState('success')
-        setTestMessage('Connection successful!')
+        setTestMessage(`${provider === 'gemini' ? 'Gemini' : 'OpenAI'} connection successful!`)
       } else {
         setTestState('error')
         setTestMessage(response?.error?.message || extensionResponseError(undefined))
@@ -89,8 +84,7 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
       
       <div className="notice">
         <p className="text-sm" style={{ margin: 0 }}>
-          Your key is stored only in this browser and used only to call Google's Gemini API. 
-          When you generate drafts, the question text, job description, and your profile summary, skills, education, experience, and projects are sent to Google's Gemini API. Contact details are not sent.
+          Keys are stored locally. Drafting sends questions, job details, and relevant profile facts to your chosen provider (Google Gemini or OpenAI); contact details are excluded. If fallback is enabled, both providers may receive this information and charge for usage. CV import uses Gemini and sends the selected CV after your consent.
         </p>
       </div>
 
@@ -119,17 +113,33 @@ export function SettingsSection({ initialData }: { initialData: Settings | null 
             <button 
               type="button" 
               className="btn btn-secondary" 
-              onClick={() => { void onTestKey() }} 
+              onClick={() => { void onTestKey('gemini') }} 
               disabled={testState === 'testing'}
             >
-              Test Key
-            </button>
-            <button type="submit" className="btn" disabled={!isDirty && !isSaved}>
-              <Save size={16} /> {isSaved ? 'Saved!' : 'Save'}
+              Test Gemini
             </button>
           </div>
           {errors.geminiApiKey && <span className="error-message">{errors.geminiApiKey.message}</span>}
         </div>
+
+        <div className="form-group">
+          <label htmlFor="openaiApiKey">OpenAI API Key</label>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input id="openaiApiKey" type="password" className="input" placeholder="sk-..." {...register('openaiApiKey')} />
+            <button type="button" className="btn btn-secondary" onClick={() => { void onTestKey('openai') }} disabled={testState === 'testing'}>Test OpenAI</button>
+          </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="primaryProvider">Preferred AI provider</label>
+          <select id="primaryProvider" className="input" {...register('primaryProvider')} defaultValue={initialData?.primaryProvider ?? 'gemini'}>
+            <option value="gemini">Gemini</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label><input type="checkbox" {...register('fallbackEnabled')} /> Try the other provider if the preferred provider fails (requires both keys)</label>
+        </div>
+        <button type="submit" className="btn" disabled={!isDirty && !isSaved}><Save size={16} /> {isSaved ? 'Saved!' : 'Save'}</button>
 
         {testState !== 'idle' && (
           <div 

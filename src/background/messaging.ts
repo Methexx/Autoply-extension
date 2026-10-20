@@ -1,8 +1,9 @@
-import { AppMessageSchema, AppError, AppErrorSchema, Draft, ExtractedProfile } from '../shared/schemas'
+import { AppMessageSchema, AppError, AppErrorSchema, Draft, ExtractedProfile, Settings } from '../shared/schemas'
 import { getProfile, getSettings } from '../shared/storage'
 import { toLlmProfile } from '../shared/profile'
 import { GEMINI_MODEL, JOB_DESCRIPTION_MAX_CHARS } from '../shared/constants'
 import { geminiProvider } from './llm/gemini'
+import { openaiProvider } from './llm/openai'
 import { DraftInput } from './llm/provider'
 import { ParseError } from './llm/parse'
 
@@ -26,8 +27,34 @@ function toAppError(err: unknown): AppError {
   }
   return {
     code: 'NETWORK',
-    message: err instanceof Error ? err.message : 'Unknown error occurred.',
+    message: 'Autoply could not contact the AI provider. Try again.',
     retryable: true,
+  }
+}
+
+async function draftWithProviders(input: DraftInput, settings: Settings): Promise<MessageResponse> {
+  const preferred = settings.primaryProvider ?? 'gemini'
+  const other = preferred === 'gemini' ? 'openai' : 'gemini'
+  const keys = { gemini: settings.geminiApiKey, openai: settings.openaiApiKey ?? '' }
+  const primary = keys[preferred] ? preferred : other
+  if (!keys[primary]) return { ok: false, error: { code: 'NO_KEY', message: 'Add a Gemini or OpenAI API key in options.', retryable: false } }
+  const run = (provider: 'gemini' | 'openai') => provider === 'gemini'
+    ? geminiProvider.draftAnswers(input, keys.gemini, settings.model || GEMINI_MODEL)
+    : openaiProvider.draftAnswers(input, keys.openai)
+  try {
+    return { ok: true, drafts: await run(primary) }
+  } catch (err) {
+    const error = toAppError(err)
+    const fallback = primary === 'gemini' ? 'openai' : 'gemini'
+    if (settings.fallbackEnabled && keys[fallback] && (error.retryable || error.code === 'INVALID_KEY')) {
+      try { return { ok: true, drafts: await run(fallback) } }
+      catch (fallbackError) { return { ok: false, error: toAppError(fallbackError) } }
+    }
+    if (error.retryable && error.code !== 'RATE_LIMITED') {
+      try { return { ok: true, drafts: await run(primary) } }
+      catch (retryError) { return { ok: false, error: toAppError(retryError) } }
+    }
+    return { ok: false, error }
   }
 }
 
@@ -64,19 +91,22 @@ export async function handleAppMessage(
   switch (msg.type) {
     case 'TEST_KEY': {
       const settings = await getSettings()
-      if (!settings?.geminiApiKey) {
+      const provider = msg.provider ?? 'gemini'
+      const key = provider === 'gemini' ? settings?.geminiApiKey : settings?.openaiApiKey
+      if (!key) {
         return {
           ok: false,
           error: {
             code: 'NO_KEY',
-            message: 'No Gemini API key stored. Please enter and save your key first.',
+            message: `No ${provider === 'gemini' ? 'Gemini' : 'OpenAI'} API key stored. Please enter and save your key first.`,
             retryable: false,
           },
         }
       }
 
       try {
-        await geminiProvider.testKey(settings.geminiApiKey, settings.model || GEMINI_MODEL)
+        if (provider === 'gemini') await geminiProvider.testKey(key, settings?.model || GEMINI_MODEL)
+        else await openaiProvider.testKey(key)
         return { ok: true }
       } catch (err) {
         return {
@@ -107,12 +137,12 @@ export async function handleAppMessage(
 
     case 'DRAFT_REQUEST': {
       const settings = await getSettings()
-      if (!settings?.geminiApiKey) {
+      if (!settings || !(settings.geminiApiKey || settings.openaiApiKey)) {
         return {
           ok: false,
           error: {
             code: 'NO_KEY',
-            message: 'Add your Gemini API key in options.',
+            message: 'Add a Gemini or OpenAI API key in options.',
             retryable: false,
           },
         }
@@ -142,48 +172,17 @@ export async function handleAppMessage(
         questions: msg.questions,
       }
 
-      // Drafting pipeline with 1 retry for BAD_MODEL_OUTPUT or retryable errors
-      let attempts = 0
-      while (attempts < 2) {
-        attempts++
-        try {
-          const drafts = await geminiProvider.draftAnswers(
-            draftInput,
-            settings.geminiApiKey,
-            settings.model || GEMINI_MODEL,
-          )
-          return { ok: true, drafts }
-        } catch (err) {
-          const appErr = toAppError(err)
-          if (attempts === 1 && (appErr.code === 'BAD_MODEL_OUTPUT' || appErr.retryable)) {
-            if (appErr.code === 'RATE_LIMITED') {
-              // Rule: For 429 RATE_LIMITED, do NOT auto-retry
-              return { ok: false, error: appErr }
-            }
-            continue
-          }
-          return { ok: false, error: appErr }
-        }
-      }
-
-      return {
-        ok: false,
-        error: {
-          code: 'BAD_MODEL_OUTPUT',
-          message: 'The model returned an unusable answer after retry. Try again.',
-          retryable: true,
-        },
-      }
+      return draftWithProviders(draftInput, settings)
     }
 
     case 'REGENERATE_REQUEST': {
       const settings = await getSettings()
-      if (!settings?.geminiApiKey) {
+      if (!settings || !(settings.geminiApiKey || settings.openaiApiKey)) {
         return {
           ok: false,
           error: {
             code: 'NO_KEY',
-            message: 'Add your Gemini API key in options.',
+            message: 'Add a Gemini or OpenAI API key in options.',
             retryable: false,
           },
         }
@@ -214,36 +213,7 @@ export async function handleAppMessage(
         ...(msg.hint ? { hint: msg.hint } : {}),
       }
 
-      let attempts = 0
-      while (attempts < 2) {
-        attempts++
-        try {
-          const drafts = await geminiProvider.draftAnswers(
-            draftInput,
-            settings.geminiApiKey,
-            settings.model || GEMINI_MODEL,
-          )
-          return { ok: true, drafts }
-        } catch (err) {
-          const appErr = toAppError(err)
-          if (attempts === 1 && (appErr.code === 'BAD_MODEL_OUTPUT' || appErr.retryable)) {
-            if (appErr.code === 'RATE_LIMITED') {
-              return { ok: false, error: appErr }
-            }
-            continue
-          }
-          return { ok: false, error: appErr }
-        }
-      }
-
-      return {
-        ok: false,
-        error: {
-          code: 'BAD_MODEL_OUTPUT',
-          message: 'The model returned an unusable answer after retry. Try again.',
-          retryable: true,
-        },
-      }
+      return draftWithProviders(draftInput, settings)
     }
   }
 }

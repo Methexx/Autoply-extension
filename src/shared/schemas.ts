@@ -63,6 +63,9 @@ export const CvFileSchema = z.object({
 
 export const SettingsSchema = z.object({
   geminiApiKey: z.string(),
+  openaiApiKey: z.string().optional(),
+  primaryProvider: z.enum(['gemini', 'openai']).optional(),
+  fallbackEnabled: z.boolean().optional(),
   model: z.string(),
   jobTextMaxChars: z.number().int().positive(),
 })
@@ -133,7 +136,7 @@ export const AppMessageSchema = z.discriminatedUnion('type', [
     question: QuestionSchema,
     hint: z.string().optional(),
   }),
-  z.object({ type: z.literal('TEST_KEY') }),
+  z.object({ type: z.literal('TEST_KEY'), provider: z.enum(['gemini', 'openai']).optional() }),
   z.object({ type: z.literal('CV_EXTRACT_REQUEST'), file: CvFileSchema }),
   z.object({
     type: z.literal('OPEN_OPTIONS'),

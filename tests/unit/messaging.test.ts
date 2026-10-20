@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { handleAppMessage } from '../../src/background/messaging'
 import { geminiProvider } from '../../src/background/llm/gemini'
+import { openaiProvider } from '../../src/background/llm/openai'
 import * as storage from '../../src/shared/storage'
 import { Profile, Settings, Question, JobContext } from '../../src/shared/schemas'
 
@@ -11,6 +12,7 @@ vi.mock('../../src/background/llm/gemini', () => ({
     extractProfileFromCv: vi.fn(),
   },
 }))
+vi.mock('../../src/background/llm/openai', () => ({ openaiProvider: { testKey: vi.fn(), draftAnswers: vi.fn() } }))
 
 describe('Background messaging pipeline', () => {
   const validSender = { id: 'test-extension-id' } as chrome.runtime.MessageSender
@@ -57,6 +59,43 @@ describe('Background messaging pipeline', () => {
         openOptionsPage: vi.fn().mockResolvedValue(undefined),
       },
     } as unknown as typeof chrome
+  })
+
+  it('uses OpenAI when it is the only configured key', async () => {
+    vi.spyOn(storage, 'getSettings').mockResolvedValue({ ...mockSettings, geminiApiKey: '', openaiApiKey: 'openai-test' })
+    vi.spyOn(storage, 'getProfile').mockResolvedValue(mockProfile)
+    vi.mocked(openaiProvider.draftAnswers).mockResolvedValue([{ id: 'q1', status: 'needs_input', answer: '' }])
+    const result = await handleAppMessage({ type: 'DRAFT_REQUEST', job: mockJob, questions: mockQuestions }, validSender)
+    expect(result.ok).toBe(true)
+    expect(openaiProvider.draftAnswers).toHaveBeenCalledOnce()
+    expect(geminiProvider.draftAnswers).not.toHaveBeenCalled()
+  })
+
+  it('falls back on failure only when explicitly enabled', async () => {
+    vi.spyOn(storage, 'getSettings').mockResolvedValue({ ...mockSettings, openaiApiKey: 'openai-test', fallbackEnabled: true })
+    vi.spyOn(storage, 'getProfile').mockResolvedValue(mockProfile)
+    vi.mocked(geminiProvider.draftAnswers).mockRejectedValueOnce({ code: 'RATE_LIMITED', message: 'Limited', retryable: true })
+    vi.mocked(openaiProvider.draftAnswers).mockResolvedValueOnce([{ id: 'q1', status: 'ok', answer: 'Draft' }])
+    const result = await handleAppMessage({ type: 'DRAFT_REQUEST', job: mockJob, questions: mockQuestions }, validSender)
+    expect(result.ok).toBe(true)
+    expect(openaiProvider.draftAnswers).toHaveBeenCalledOnce()
+  })
+
+  it('does not fall back for a valid needs_input answer', async () => {
+    vi.spyOn(storage, 'getSettings').mockResolvedValue({ ...mockSettings, openaiApiKey: 'openai-test', fallbackEnabled: true })
+    vi.spyOn(storage, 'getProfile').mockResolvedValue(mockProfile)
+    vi.mocked(geminiProvider.draftAnswers).mockResolvedValueOnce([{ id: 'q1', status: 'needs_input', answer: '' }])
+    await handleAppMessage({ type: 'DRAFT_REQUEST', job: mockJob, questions: mockQuestions }, validSender)
+    expect(openaiProvider.draftAnswers).not.toHaveBeenCalled()
+  })
+
+  it('does not send data to the other provider when fallback is disabled', async () => {
+    vi.spyOn(storage, 'getSettings').mockResolvedValue({ ...mockSettings, openaiApiKey: 'openai-test', fallbackEnabled: false })
+    vi.spyOn(storage, 'getProfile').mockResolvedValue(mockProfile)
+    vi.mocked(geminiProvider.draftAnswers).mockRejectedValueOnce({ code: 'RATE_LIMITED', message: 'Limited', retryable: true })
+    const result = await handleAppMessage({ type: 'DRAFT_REQUEST', job: mockJob, questions: mockQuestions }, validSender)
+    expect(result.ok).toBe(false)
+    expect(openaiProvider.draftAnswers).not.toHaveBeenCalled()
   })
 
   it('rejects messages from unauthorized sender', async () => {

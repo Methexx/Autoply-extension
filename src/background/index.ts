@@ -29,7 +29,7 @@ export async function handleActionClick(tab: chrome.tabs.Tab, frameId?: number):
   const settings = await getSettings()
 
   // Missing profile or API key opens options page per M4-T8 AC
-  if (!profile || !settings?.geminiApiKey) {
+  if (!profile || !(settings?.geminiApiKey || settings?.openaiApiKey)) {
     if (chrome.runtime.openOptionsPage) {
       await chrome.runtime.openOptionsPage()
     }

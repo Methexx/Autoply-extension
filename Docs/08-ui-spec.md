@@ -14,7 +14,9 @@ Two UIs: the **options page** (profile + key) and the **review overlay** (on the
 
 Single page with three sections and a sticky save bar.
 
-### 2.1 Gemini API key
+### 2.1 AI provider keys
+
+As of D-016, the settings page supports Gemini and OpenAI keys, a preferred provider, and explicit opt-in fallback. Drafting data may be sent to both providers when fallback is enabled. CV import remains Gemini-only. The Gemini-specific text below is superseded by this notice.
 - Password-style input + "Show" toggle while editing; after saving, display `••••••••` + last 4 characters only.
 - Buttons: **Save**, **Test key**, **Remove key**.
 - Helper text: "Your key is stored only in this browser and used only to call Google's Gemini API. Create a free key in Google AI Studio."
@@ -59,7 +61,7 @@ Behaviour:
 | State | What the user sees |
 |-------|-------------------|
 | `scanning` | Spinner: "Scanning the form…" |
-| `drafting` | Standard fields summary + skeleton cards: "Drafting answers with Gemini…" |
+| `drafting` | Standard fields summary + skeleton cards: "Drafting answers with your AI provider…" |
 | `review` | Header summary + list of review items + footer actions |
 | `filled` | Success message: "Filled N answers. Review the form, then submit it yourself." |
 | `error` | Error message with next-step button (see 4.5) |
@@ -88,10 +90,10 @@ Behaviour:
 | Code | Message | Action button |
 |------|---------|---------------|
 | `NO_PROFILE` | "Add your profile first." | Open options |
-| `NO_KEY` | "Add your Gemini API key to get drafts." | Open options |
-| `INVALID_KEY` | "Gemini rejected your API key." | Open options |
-| `RATE_LIMITED` | "Gemini's rate limit was reached. Wait a minute, then try again." | Retry |
-| `NETWORK` | "Couldn't reach Gemini. Check your connection." | Retry |
+| `NO_KEY` | "Add a Gemini or OpenAI API key to get drafts." | Open options |
+| `INVALID_KEY` | "Your AI provider rejected the API key." | Open options |
+| `RATE_LIMITED` | "The AI provider rate limit was reached. Wait a minute, then try again." | Retry |
+| `NETWORK` | "Couldn't reach the AI provider. Check your connection." | Retry |
 | `BAD_MODEL_OUTPUT` | "The model's answer couldn't be used." | Retry |
 | `NO_FIELDS` | "I couldn't find an application form on this page." | Close |
 | `UNSUPPORTED_PAGE` | "This page isn't supported yet." | Close |

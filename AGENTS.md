@@ -31,7 +31,7 @@ These are product-defining. A change that breaks one is wrong even if it passes 
 
 1. **Never click, submit, or trigger submission** of an application form. No `form.submit()`, no `.click()` on submit/apply/send buttons, no synthetic Enter key presses on form fields.
 2. **Never fill AI-generated text into a form before the user approves it** in the review overlay.
-3. **No Autoply backend.** Data stays in `chrome.storage.local`. The only network call is to the Gemini API, made from the service worker.
+3. **No Autoply backend.** Data stays in `chrome.storage.local`. Only configured Gemini and OpenAI API requests are allowed, made from the service worker (D-016).
 4. **The API key is never exposed to page context.** Only the service worker reads it. Never put it in the content script, overlay, logs, or error messages.
 5. **Never log profile contents or answers** to the console in production builds.
 6. **Do not invent profile facts.** The LLM prompt must forbid it and the UI must surface `NEEDS_INPUT`.

@@ -92,3 +92,7 @@ Options page where the user stores their profile locally.
 2. All AC above pass in unit/e2e tests or the manual checklist in `11-testing.md`.
 3. The extension never submits (F7 verified).
 4. README documents setup, key creation, privacy, and the ToS note.
+# Provider update (D-016)
+
+The project owner approved OpenAI drafting and opt-in cross-provider fallback in addition to Gemini. This supersedes earlier Gemini-only scope statements; all approval and submission safety rules remain unchanged.
+
